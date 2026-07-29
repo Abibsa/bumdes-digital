@@ -256,7 +256,7 @@ export default function Akuntansi() {
                   <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Laporan Laba Rugi</h2>
                   <p className="text-slate-500 font-medium">BUMDes Noto Mulyo Pulodarat</p>
                 </div>
-                <button onClick={exportLabaRugiExcel} className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm bg-primary-50 text-primary-700 hover:bg-primary-100 px-4 py-2.5 rounded-xl font-bold border border-primary-100 trans-all active:scale-95">
+                <button onClick={exportLabaRugiExcel} className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-500/30 trans-all active:scale-95 border-none">
                   <Download size={18} /> Download Excel
                 </button>
               </div>
@@ -319,7 +319,7 @@ export default function Akuntansi() {
                   <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Laporan Neraca</h2>
                   <p className="text-slate-500 font-medium">BUMDes Noto Mulyo Pulodarat</p>
                 </div>
-                <button onClick={exportNeracaPdf} className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm bg-rose-50 text-rose-600 hover:bg-rose-100 px-4 py-2.5 rounded-xl font-bold border border-rose-100 trans-all active:scale-95">
+                <button onClick={exportNeracaPdf} className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-rose-500/30 trans-all active:scale-95 border-none">
                   <Download size={18} /> Download PDF
                 </button>
               </div>
