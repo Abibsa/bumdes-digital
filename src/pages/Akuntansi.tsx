@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileText, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { FileText, TrendingUp, DollarSign } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Akuntansi() {
