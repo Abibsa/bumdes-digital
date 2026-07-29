@@ -96,7 +96,7 @@ export default function MainLayout() {
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
         
         {/* Header */}
-        <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center px-4 md:px-8 shadow-sm z-10 print:hidden justify-between shrink-0">
+        <header className="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 flex items-center px-4 md:px-8 shadow-sm z-10 print:hidden justify-between shrink-0">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
@@ -104,21 +104,21 @@ export default function MainLayout() {
             >
               <Menu size={20} />
             </button>
-            <h2 className="font-bold text-lg text-slate-800 dark:text-slate-100 hidden sm:block">Sistem Pengelolaan BUMDes</h2>
+            <h2 className="font-extrabold text-lg text-slate-800 dark:text-slate-100 tracking-tight">Sistem BUMDes</h2>
           </div>
 
           <div className="flex items-center gap-3">
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 trans-all active:scale-90"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 trans-all active:scale-90 shadow-inner"
               title={isDark ? 'Mode Terang' : 'Mode Gelap'}
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 hidden sm:block">Admin Pusat</span>
-            <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-sm border-2 border-white dark:border-slate-800 shadow-sm">
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-300 hidden sm:block">Admin Pusat</span>
+            <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black text-sm border-2 border-white dark:border-slate-800 shadow-md">
               A
             </div>
           </div>

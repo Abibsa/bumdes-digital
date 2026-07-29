@@ -49,36 +49,41 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 pb-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary-900 to-primary-700 rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
-        <div className="relative z-10">
-          <h1 className="text-2xl md:text-3xl font-extrabold mb-2">Selamat Datang di BUMDes Digital! 👋</h1>
-          <p className="text-primary-100 text-sm md:text-base max-w-xl leading-relaxed">
-            Sistem informasi cerdas untuk mengelola stok, kasir, dan laporan keuangan BUMDes secara otomatis dan real-time.
+      <div className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-600 rounded-3xl p-5 md:p-8 text-white shadow-2xl shadow-primary-900/30 relative overflow-hidden group">
+        <div className="relative z-10 animate-fade-in-up">
+          <h1 className="text-2xl md:text-3xl font-black mb-2 tracking-tight">Hai, Admin BUMDes! 👋</h1>
+          <p className="text-primary-100 text-xs md:text-sm max-w-xl leading-relaxed font-medium">
+            Pantau dan kelola seluruh transaksi, stok, hingga laporan akuntansi BUMDes secara real-time dari genggaman Anda.
           </p>
         </div>
-        <div className="absolute -right-10 -top-10 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl"></div>
-        <div className="absolute right-20 -bottom-10 w-32 h-32 bg-emerald-400 opacity-20 rounded-full blur-xl"></div>
+        <div className="absolute -right-10 -top-10 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl group-hover:scale-110 trans-all duration-700"></div>
+        <div className="absolute right-10 -bottom-10 w-32 h-32 bg-emerald-400 opacity-20 rounded-full blur-2xl group-hover:translate-x-4 trans-all duration-700"></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-500 opacity-20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 mix-blend-screen"></div>
       </div>
 
       {/* Grid Statistik */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
         {statCards.map((stat, i) => (
-          <div key={i} className={`card rounded-2xl p-6 border ${stat.border} shadow-sm hover:shadow-md trans-all hover:-translate-y-1 relative overflow-hidden group`}>
+          <div key={i} className={`card rounded-3xl p-5 md:p-6 border-b-4 ${stat.border} shadow-sm hover:shadow-xl trans-all hover:-translate-y-1 relative overflow-hidden group animate-fade-in-up`} style={{ animationDelay: `${i * 100}ms` }}>
             <div className="flex justify-between items-start relative z-10">
               <div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">{stat.title}</p>
-                <h3 className={`text-2xl md:text-3xl font-extrabold ${stat.textCol}`}>
+                <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1.5">{stat.title}</p>
+                <h3 className={`text-2xl md:text-3xl font-black ${stat.textCol} tracking-tight`}>
                   {loading ? '...' : stat.value}
                 </h3>
               </div>
-              <div className={`p-4 rounded-2xl ${stat.bg} group-hover:scale-110 trans-all`}>
+              <div className={`p-3 md:p-4 rounded-2xl ${stat.bg} group-hover:scale-110 group-hover:rotate-3 trans-all shadow-inner`}>
                 {stat.icon}
               </div>
             </div>
-            <div className="mt-4 flex items-center text-[11px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 inline-block px-2 py-1 rounded-md">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></div>
-              LIVE DATABASE
+            <div className="mt-4 md:mt-5 flex items-center justify-between">
+              <div className="flex items-center text-[10px] font-extrabold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-lg tracking-wider">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></div>
+                REAL-TIME
+              </div>
             </div>
+            {/* Dekorasi Card */}
+            <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-gradient-to-tl from-slate-200 to-transparent dark:from-slate-700 opacity-20 rounded-full group-hover:scale-150 trans-all duration-500"></div>
           </div>
         ))}
       </div>
