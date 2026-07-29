@@ -113,51 +113,55 @@ export default function Stok() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto p-4 md:p-6 bg-slate-50/30">
         {loading ? (
           <div className="flex items-center justify-center h-full text-slate-500">Memuat data dari database...</div>
         ) : filteredItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-slate-500">Tidak ada data barang ditemukan.</div>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500">
-                <th className="font-medium p-4 pl-6">Kode (SKU)</th>
-                <th className="font-medium p-4">Nama Barang</th>
-                <th className="font-medium p-4">Kategori</th>
-                <th className="font-medium p-4">Harga Beli (HPP)</th>
-                <th className="font-medium p-4">Harga Jual</th>
-                <th className="font-medium p-4">Sisa Stok</th>
-                <th className="font-medium p-4 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredItems.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="p-4 pl-6 text-sm font-mono text-slate-500">{item.sku}</td>
-                  <td className="p-4 text-sm font-medium text-slate-800">{item.name}</td>
-                  <td className="p-4">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-                      {item.category}
-                    </span>
-                  </td>
-                  <td className="p-4 text-sm font-medium text-slate-600">Rp {item.cost_price?.toLocaleString('id-ID')}</td>
-                  <td className="p-4 text-sm font-medium text-primary-600">Rp {item.price.toLocaleString('id-ID')}</td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                      item.stock < 10 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
-                    }`}>
-                      {item.stock} unit
-                    </span>
-                  </td>
-                  <td className="p-4 text-center">
-                    <button onClick={() => handleEdit(item)} className="text-blue-500 hover:text-blue-700 p-2"><Edit size={16} /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-rose-500 hover:text-rose-700 p-2"><Trash2 size={16} /></button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                    <th className="p-4 pl-6">Kode (SKU)</th>
+                    <th className="p-4">Nama Barang</th>
+                    <th className="p-4">Kategori</th>
+                    <th className="p-4">Harga Beli (HPP)</th>
+                    <th className="p-4">Harga Jual</th>
+                    <th className="p-4">Sisa Stok</th>
+                    <th className="p-4 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredItems.map((item) => (
+                    <tr key={item.id} className="hover:bg-primary-50/50 transition-colors">
+                      <td className="p-4 pl-6 text-sm font-mono text-slate-500">{item.sku}</td>
+                      <td className="p-4 text-sm font-bold text-slate-800">{item.name}</td>
+                      <td className="p-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 tracking-wide uppercase">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td className="p-4 text-sm font-medium text-slate-500">Rp {item.cost_price?.toLocaleString('id-ID')}</td>
+                      <td className="p-4 text-sm font-extrabold text-primary-600">Rp {item.price.toLocaleString('id-ID')}</td>
+                      <td className="p-4">
+                        <span className={`inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold ${
+                          item.stock < 10 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                        }`}>
+                          {item.stock} unit
+                        </span>
+                      </td>
+                      <td className="p-4 text-center space-x-2">
+                        <button onClick={() => handleEdit(item)} className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"><Edit size={14} /></button>
+                        <button onClick={() => handleDelete(item.id)} className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-colors"><Trash2 size={14} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
       </div>
 

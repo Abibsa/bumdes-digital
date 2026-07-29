@@ -158,8 +158,8 @@ export default function Akuntansi() {
   return (
     <div className="flex flex-col h-[calc(100vh-130px)] space-y-6">
       
-      <div className="flex justify-between items-center bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-        <div className="flex gap-2">
+      <div className="flex flex-wrap gap-4 justify-between items-center bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+        <div className="flex flex-wrap gap-2">
           {[
             { id: 'laba-rugi', name: 'Laba Rugi', icon: <TrendingUp size={18} /> },
             { id: 'neraca', name: 'Neraca', icon: <DollarSign size={18} /> },
@@ -254,7 +254,7 @@ export default function Akuntansi() {
               </button>
             </div>
             
-            <div className="grid grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
               <div>
                 <h3 className="font-bold text-lg text-slate-800 mb-4 border-b border-slate-800 pb-2">AKTIVA (ASET)</h3>
                 <div className="space-y-2 text-slate-600">
@@ -292,35 +292,43 @@ export default function Akuntansi() {
 
         {/* Buku Jurnal */}
         {activeTab === 'jurnal' && (
-          <div className="flex-1 overflow-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 sticky top-0">
-                  <th className="font-medium p-4 pl-6 w-40">Waktu</th>
-                  <th className="font-medium p-4">Deskripsi / Uraian</th>
-                  <th className="font-medium p-4 w-32">Akun</th>
-                  <th className="font-medium p-4 text-right">Debit</th>
-                  <th className="font-medium p-4 text-right pr-6">Kredit</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {jurnalList.map((j) => (
-                  <tr key={j.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-4 pl-6 text-sm text-slate-500">
-                      {new Date(j.created_at).toLocaleString('id-ID')}
-                    </td>
-                    <td className="p-4 text-sm text-slate-700">{j.description}</td>
-                    <td className="p-4 text-sm font-medium text-slate-600">{j.accounts?.name}</td>
-                    <td className="p-4 text-sm text-right text-emerald-600 font-medium">
-                      {j.debit > 0 ? `Rp ${j.debit.toLocaleString('id-ID')}` : '-'}
-                    </td>
-                    <td className="p-4 pr-6 text-sm text-right text-rose-600 font-medium">
-                      {j.credit > 0 ? `Rp ${j.credit.toLocaleString('id-ID')}` : '-'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex-1 overflow-auto bg-slate-50/30 p-0 md:p-4">
+            <div className="bg-white md:rounded-2xl border-y md:border border-slate-200 overflow-hidden shadow-sm h-full">
+              <div className="overflow-x-auto h-full">
+                <table className="w-full text-left border-collapse min-w-[700px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold sticky top-0 z-10 shadow-sm">
+                      <th className="p-4 pl-6 w-40">Waktu</th>
+                      <th className="p-4">Deskripsi / Uraian</th>
+                      <th className="p-4 w-32">Akun</th>
+                      <th className="p-4 text-right">Debit</th>
+                      <th className="p-4 text-right pr-6">Kredit</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {jurnalList.map((j) => (
+                      <tr key={j.id} className="hover:bg-primary-50/50 transition-colors">
+                        <td className="p-4 pl-6 text-sm text-slate-500">
+                          {new Date(j.created_at).toLocaleString('id-ID')}
+                        </td>
+                        <td className="p-4 text-sm font-medium text-slate-800">{j.description}</td>
+                        <td className="p-4">
+                          <span className="inline-flex px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-bold uppercase tracking-wider">
+                            {j.accounts?.name}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-right text-emerald-600 font-bold">
+                          {j.debit > 0 ? `Rp ${j.debit.toLocaleString('id-ID')}` : '-'}
+                        </td>
+                        <td className="p-4 pr-6 text-sm text-right text-rose-600 font-bold">
+                          {j.credit > 0 ? `Rp ${j.credit.toLocaleString('id-ID')}` : '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
       </div>
