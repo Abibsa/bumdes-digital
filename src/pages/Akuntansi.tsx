@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { FileText, TrendingUp, DollarSign, Download, X, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import 'jspdf-autotable';
 
 export default function Akuntansi() {
   const [activeTab, setActiveTab] = useState<'laba-rugi' | 'neraca' | 'jurnal'>('laba-rugi');
@@ -153,30 +153,64 @@ export default function Akuntansi() {
   // EXPORT EXCEL Laba Rugi
   const exportLabaRugiExcel = () => {
     const data = [
-      ['LAPORAN LABA RUGI BUMDES NOTO MULYO'],
-      ['TANGGAL CETAK: ' + new Date().toLocaleDateString('id-ID')],
-      [''],
+      ['LAPORAN LABA RUGI BUMDES NOTO MULYO', ''],
+      ['TANGGAL CETAK: ' + new Date().toLocaleDateString('id-ID'), ''],
+      ['', ''],
       ['PENDAPATAN', 'NOMINAL (Rp)'],
       ['Pendapatan Penjualan Toko', labaRugi.pendapatanToko],
       ['Pendapatan Usaha Lainnya (Parkir, Lele, dll)', labaRugi.pendapatanLain],
       ['Total Pendapatan', labaRugi.pendapatanToko + labaRugi.pendapatanLain],
-      [''],
+      ['', ''],
       ['BEBAN', 'NOMINAL (Rp)'],
-      ['Harga Pokok Penjualan (HPP)', `(${labaRugi.hpp})`],
+      ['Harga Pokok Penjualan (HPP)', labaRugi.hpp * -1],
       ['LABA KOTOR', labaRugi.labaKotor],
-      [''],
-      ['Beban Operasional', `(${labaRugi.bebanOperasional})`],
+      ['', ''],
+      ['Beban Operasional', labaRugi.bebanOperasional * -1],
       ['LABA BERSIH', labaRugi.labaBersih]
     ];
+    
     const ws = XLSX.utils.aoa_to_sheet(data);
     
     // Formatting lebar kolom
-    ws['!cols'] = [{ wch: 45 }, { wch: 20 }];
+    ws['!cols'] = [{ wch: 45 }, { wch: 25 }];
     // Merge baris judul
     ws['!merges'] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } },
       { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } }
     ];
+
+    // STYLING EXCEL
+    const titleStyle = { font: { bold: true, sz: 14, color: { rgb: "0F172A" } }, alignment: { horizontal: "center" } };
+    const dateStyle = { font: { italic: true, sz: 10, color: { rgb: "64748B" } }, alignment: { horizontal: "center" } };
+    const headerStyle = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "0F172A" } }, border: { top: { style: "thin" }, bottom: { style: "thin" } } };
+    const boldRowStyle = { font: { bold: true }, fill: { fgColor: { rgb: "F8FAFC" } } };
+    const profitStyle = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "10B981" } } };
+    const numberFormat = { numFmt: '"Rp"#,##0_);\\("Rp"#,##0\\)' };
+
+    // Apply Styles to specific cells
+    if (ws['A1']) ws['A1'].s = titleStyle;
+    if (ws['A2']) ws['A2'].s = dateStyle;
+    
+    // Headers (Pendapatan & Beban)
+    if (ws['A4']) ws['A4'].s = headerStyle;
+    if (ws['B4']) ws['B4'].s = headerStyle;
+    if (ws['A9']) ws['A9'].s = headerStyle;
+    if (ws['B9']) ws['B9'].s = headerStyle;
+
+    // Total Pendapatan & Laba Kotor
+    if (ws['A7']) ws['A7'].s = boldRowStyle;
+    if (ws['B7']) ws['B7'].s = { ...boldRowStyle, ...numberFormat };
+    if (ws['A11']) ws['A11'].s = boldRowStyle;
+    if (ws['B11']) ws['B11'].s = { ...boldRowStyle, ...numberFormat };
+
+    // Laba Bersih
+    if (ws['A14']) ws['A14'].s = profitStyle;
+    if (ws['B14']) ws['B14'].s = { ...profitStyle, ...numberFormat };
+
+    // Normal numbers
+    [5, 6, 10, 13].forEach(row => {
+      if (ws[`B${row}`]) ws[`B${row}`].s = numberFormat;
+    });
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Laba Rugi");
@@ -186,13 +220,25 @@ export default function Akuntansi() {
   // EXPORT PDF Neraca
   const exportNeracaPdf = () => {
     const doc = new jsPDF();
+    
+    // Header PDF
+    doc.setFillColor(15, 23, 42); // slate-900
+    doc.rect(0, 0, 210, 25, 'F');
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
-    doc.text("LAPORAN NERACA BUMDES NOTO MULYO", 14, 20);
+    doc.setFont("helvetica", "bold");
+    doc.text("LAPORAN NERACA", 14, 12);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("BUMDes Noto Mulyo Pulodarat", 14, 18);
+    
+    doc.setTextColor(15, 23, 42);
 
     doc.setFontSize(12);
-    doc.text("AKTIVA (ASET)", 14, 35);
-    autoTable(doc, {
-      startY: 40,
+    doc.setFont("helvetica", "bold");
+    doc.text("AKTIVA (ASET)", 14, 40);
+    (doc as any).autoTable({
+      startY: 45,
       head: [['Nama Akun', 'Saldo (Rp)']],
       body: [
         ['Kas (Uang Tunai)', neraca.kas.toLocaleString('id-ID')],
@@ -200,13 +246,22 @@ export default function Akuntansi() {
         ['TOTAL AKTIVA', neraca.totalAset.toLocaleString('id-ID')]
       ],
       theme: 'grid',
-      headStyles: { fillColor: [16, 185, 129] },
-      styles: { fontSize: 10 }
+      headStyles: { fillColor: [16, 185, 129], textColor: [255, 255, 255], fontStyle: 'bold' },
+      styles: { fontSize: 10, cellPadding: 5 },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      willDrawCell: (data: any) => {
+        if (data.row.index === 2 && data.section === 'body') {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(16, 185, 129); // Emerald for Total
+        }
+      }
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY || 40;
+    const finalY = (doc as any).lastAutoTable.finalY || 45;
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42);
     doc.text("PASIVA (KEWAJIBAN & EKUITAS)", 14, finalY + 15);
-    autoTable(doc, {
+    (doc as any).autoTable({
       startY: finalY + 20,
       head: [['Nama Akun', 'Saldo (Rp)']],
       body: [
@@ -214,8 +269,15 @@ export default function Akuntansi() {
         ['TOTAL PASIVA', neraca.modal.toLocaleString('id-ID')]
       ],
       theme: 'grid',
-      headStyles: { fillColor: [244, 63, 94] }, // Rose color for pasiva
-      styles: { fontSize: 10 }
+      headStyles: { fillColor: [225, 29, 72], textColor: [255, 255, 255], fontStyle: 'bold' }, // Rose color for pasiva
+      styles: { fontSize: 10, cellPadding: 5 },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      willDrawCell: (data: any) => {
+        if (data.row.index === 1 && data.section === 'body') {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(225, 29, 72); // Rose for Total
+        }
+      }
     });
 
     doc.save("Laporan_Neraca.pdf");
