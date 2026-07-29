@@ -20,8 +20,10 @@ export default function Pos() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
-  const [lastInvoice, setLastInvoice] = useState('');
   const [storeInfo, setStoreInfo] = useState({ name: 'BUMDes Noto Mulyo', address: 'Pulodarat, Jepara' });
+
+  // Data yang disimpan KHUSUS untuk struk cetak (tidak ikut ter-reset)
+  const [printData, setPrintData] = useState<{ items: CartItem[], total: number, invoice: string, date: string } | null>(null);
 
   // Mobile cart toggle
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
@@ -82,7 +84,15 @@ export default function Pos() {
 
     try {
       const invoiceNumber = `INV-${Date.now()}`;
-      setLastInvoice(invoiceNumber);
+
+      // Simpan data struk SEBELUM cart di-reset
+      const now = new Date();
+      setPrintData({
+        items: [...cart],
+        total: total,
+        invoice: invoiceNumber,
+        date: `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')}`
+      });
 
       const { data: trx, error: trxErr } = await supabase.from('transactions').insert({
         invoice_number: invoiceNumber,
@@ -123,15 +133,17 @@ export default function Pos() {
         ]);
       }
 
-      if (andPrint) {
-        setTimeout(() => window.print(), 500);
-      } else {
-        alert(`Transaksi Berhasil! Nota: ${invoiceNumber}`);
-      }
-
+      // Reset cart DULU, baru panggil print
       setCart([]);
       setIsMobileCartOpen(false);
       fetchItems();
+
+      if (andPrint) {
+        // Beri waktu React untuk merender printData sebelum memanggil print
+        setTimeout(() => window.print(), 600);
+      } else {
+        alert(`Transaksi Berhasil! Nota: ${invoiceNumber}`);
+      }
     } catch (err) {
       console.error(err);
       alert('Terjadi kesalahan saat checkout');
@@ -148,14 +160,14 @@ export default function Pos() {
     <>
       <div className="flex flex-col xl:flex-row gap-6 h-full min-h-[calc(100vh-130px)] print:hidden relative pb-20 xl:pb-0">
         {/* AREA BARANG (KIRI) */}
-        <div className="flex-1 bg-white/70 backdrop-blur-md rounded-3xl border border-white/50 shadow-sm p-4 md:p-6 flex flex-col h-[60vh] xl:h-auto">
+        <div className="flex-1 card rounded-3xl shadow-sm p-4 md:p-6 flex flex-col h-[60vh] xl:h-auto">
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" size={20} />
             <input
               type="text"
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Cari barang (nama atau barcode)..."
-              className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 trans-all font-medium text-slate-700"
+              className="w-full pl-12 pr-4 py-3.5 input-field border-2 rounded-2xl focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 dark:focus:ring-primary-950 trans-all font-medium"
             />
           </div>
 
@@ -164,14 +176,14 @@ export default function Pos() {
               <div
                 key={item.id}
                 onClick={() => addToCart(item)}
-                className="bg-white border-2 border-slate-100 rounded-2xl p-4 cursor-pointer hover:border-primary-400 hover:shadow-lg trans-all flex flex-col justify-between group relative overflow-hidden"
+                className="card rounded-2xl p-4 cursor-pointer hover:border-primary-400 hover:shadow-lg trans-all flex flex-col justify-between group relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-16 h-16 bg-primary-50 rounded-bl-full -mr-8 -mt-8 trans-all group-hover:scale-150 group-hover:bg-primary-100"></div>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-bl-full -mr-8 -mt-8 trans-all group-hover:scale-150 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/50"></div>
                 <div className="relative z-10">
-                  <h4 className="font-bold text-slate-800 text-sm md:text-base mb-1 line-clamp-2">{item.name}</h4>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm md:text-base mb-1 line-clamp-2">{item.name}</h4>
                   <p className="text-xs font-semibold text-slate-400 mb-3">Sisa Stok: <span className={item.stock < 5 ? 'text-rose-500' : 'text-emerald-500'}>{item.stock}</span></p>
                 </div>
-                <p className="text-primary-700 font-extrabold text-sm md:text-base relative z-10">Rp {item.price.toLocaleString('id-ID')}</p>
+                <p className="text-primary-700 dark:text-primary-400 font-extrabold text-sm md:text-base relative z-10">Rp {item.price.toLocaleString('id-ID')}</p>
               </div>
             ))}
             {filteredItems.length === 0 && (
@@ -183,7 +195,6 @@ export default function Pos() {
           </div>
         </div>
 
-        {/* AREA KERANJANG (KANAN / BAWAH DI MOBILE) */}
         {/* Floating Toggle Button for Mobile */}
         <button
           onClick={() => setIsMobileCartOpen(!isMobileCartOpen)}
@@ -198,14 +209,14 @@ export default function Pos() {
 
         {/* Cart Panel */}
         <div className={`
-          fixed xl:static inset-x-0 bottom-0 z-30 w-full xl:w-[420px] flex-shrink-0 bg-white xl:rounded-3xl border-t xl:border border-slate-200 shadow-2xl xl:shadow-sm flex flex-col h-[75vh] xl:h-auto trans-all
+          fixed xl:static inset-x-0 bottom-0 z-30 w-full xl:w-[420px] flex-shrink-0 card xl:rounded-3xl border-t xl:border shadow-2xl xl:shadow-sm flex flex-col h-[75vh] xl:h-auto trans-all
           ${isMobileCartOpen ? 'translate-y-0' : 'translate-y-full xl:translate-y-0'}
         `}>
-          <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 xl:rounded-t-3xl">
-            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <ShoppingBag size={20} className="text-primary-600" /> Keranjang Belanja
+          <div className="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 xl:rounded-t-3xl">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <ShoppingBag size={20} className="text-primary-600 dark:text-primary-400" /> Keranjang Belanja
             </h2>
-            <button onClick={() => setIsMobileCartOpen(false)} className="xl:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 text-slate-600">
+            <button onClick={() => setIsMobileCartOpen(false)} className="xl:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
               <Minus size={18} />
             </button>
           </div>
@@ -218,25 +229,25 @@ export default function Pos() {
               </div>
             )}
             {cart.map(item => (
-              <div key={item.id} className="flex gap-3 items-center p-3 rounded-2xl border border-slate-100 bg-white shadow-sm hover:border-primary-200 trans-all">
+              <div key={item.id} className="flex gap-3 items-center p-3 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:border-primary-200 dark:hover:border-primary-700 trans-all">
                 <div className="flex-1">
-                  <h4 className="text-sm font-bold text-slate-800 line-clamp-1">{item.name}</h4>
-                  <p className="text-primary-600 font-extrabold text-sm">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
+                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{item.name}</h4>
+                  <p className="text-primary-600 dark:text-primary-400 font-extrabold text-sm">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
                 </div>
-                <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
-                  <button onClick={() => updateQty(item.id, -1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm trans-all"><Minus size={14} /></button>
-                  <span className="w-6 text-center font-bold text-sm text-slate-800">{item.qty}</span>
-                  <button onClick={() => updateQty(item.id, 1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm trans-all"><Plus size={14} /></button>
+                <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-700 p-1 rounded-xl border border-slate-200 dark:border-slate-600">
+                  <button onClick={() => updateQty(item.id, -1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 hover:shadow-sm trans-all"><Minus size={14} /></button>
+                  <span className="w-6 text-center font-bold text-sm text-slate-800 dark:text-slate-100">{item.qty}</span>
+                  <button onClick={() => updateQty(item.id, 1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 hover:shadow-sm trans-all"><Plus size={14} /></button>
                 </div>
-                <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white trans-all ml-1"><Trash2 size={16} /></button>
+                <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white trans-all ml-1"><Trash2 size={16} /></button>
               </div>
             ))}
           </div>
 
-          <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-3xl">
-            <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="p-6 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-b-3xl">
+            <div className="flex justify-between items-center mb-6 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
               <span className="text-slate-500 font-bold text-sm uppercase tracking-wider">Total Tagihan</span>
-              <span className="text-2xl font-black text-primary-900">Rp {total.toLocaleString('id-ID')}</span>
+              <span className="text-2xl font-black text-primary-900 dark:text-primary-300">Rp {total.toLocaleString('id-ID')}</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <button disabled={cart.length === 0 || loading} onClick={() => handleCheckout(true)} className="flex flex-col items-center justify-center gap-1 py-3 rounded-2xl bg-slate-800 text-white hover:bg-slate-900 trans-all disabled:opacity-50 active:scale-95 shadow-lg shadow-slate-800/20">
@@ -252,44 +263,47 @@ export default function Pos() {
         </div>
       </div>
 
-      {/* AREA STRUK PRINT (Sama seperti sebelumnya) */}
-      <div className="hidden print:block w-[58mm] text-[11px] leading-snug font-mono text-black mx-auto p-1 pb-4">
-        <div className="text-center mb-4">
-          <h2 className="font-bold text-[14px]">{storeInfo.name}</h2>
-          <p>{storeInfo.address}</p>
-          <div className="border-b border-dashed border-black my-2"></div>
-        </div>
+      {/* ===== AREA STRUK CETAK (mengambil dari printData, BUKAN dari cart) ===== */}
+      {printData && (
+        <div className="hidden print:block w-[58mm] text-[11px] leading-snug font-mono text-black mx-auto p-1 pb-4 bg-white">
+          <div className="text-center mb-4">
+            <h2 className="font-bold text-[14px]">{storeInfo.name}</h2>
+            <p>{storeInfo.address}</p>
+            <div className="border-b border-dashed border-black my-2"></div>
+          </div>
 
-        <div className="mb-2">
-          <p>No: {lastInvoice}</p>
-          <p>Tgl: {new Date().toLocaleDateString('id-ID')} {new Date().toLocaleTimeString('id-ID')}</p>
-          <div className="border-b border-dashed border-black my-2"></div>
-        </div>
+          <div className="mb-2">
+            <p>No: {printData.invoice}</p>
+            <p>Tgl: {printData.date}</p>
+            <div className="border-b border-dashed border-black my-2"></div>
+          </div>
 
-        <div className="mb-2">
-          {cart.map((item, i) => (
-            <div key={i} className="mb-2">
-              <p>{item.name}</p>
-              <div className="flex justify-between">
-                <span>{item.qty} x {item.price.toLocaleString('id-ID')}</span>
-                <span>{(item.qty * item.price).toLocaleString('id-ID')}</span>
+          <div className="mb-2">
+            {printData.items.map((item, i) => (
+              <div key={i} className="mb-2">
+                <p>{item.name}</p>
+                <div className="flex justify-between">
+                  <span>{item.qty} x {item.price.toLocaleString('id-ID')}</span>
+                  <span>{(item.qty * item.price).toLocaleString('id-ID')}</span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="border-b border-dashed border-black my-2"></div>
+          <div className="border-b border-dashed border-black my-2"></div>
 
-        <div className="flex justify-between font-bold text-[13px] mb-4">
-          <span>TOTAL:</span>
-          <span>Rp {total.toLocaleString('id-ID')}</span>
-        </div>
+          <div className="flex justify-between font-bold text-[13px] mb-4">
+            <span>TOTAL:</span>
+            <span>Rp {printData.total.toLocaleString('id-ID')}</span>
+          </div>
 
-        <div className="text-center mt-6">
-          <p>Terima Kasih</p>
-          <p>Barang yang dibeli tidak dapat ditukar.</p>
+          <div className="text-center mt-6">
+            <p>Terima Kasih</p>
+            <p>Barang yang dibeli tidak dapat</p>
+            <p>ditukar.</p>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

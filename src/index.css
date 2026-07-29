@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* Ubah ke skema Deep Navy / Indigo elegan */
   --color-primary-50: #eef2ff;
   --color-primary-100: #e0e7ff;
   --color-primary-200: #c7d2fe;
@@ -18,7 +19,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-800;
+    @apply bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100;
     font-family: 'Outfit', sans-serif;
   }
 }
@@ -28,22 +29,30 @@
     box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.39);
   }
   
-  /* Glassmorphism custom classes */
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/50;
+    @apply bg-white/70 backdrop-blur-md border border-white/50 dark:bg-slate-800/70 dark:border-slate-700/50;
   }
   
   .glass-dark {
     @apply bg-slate-900/80 backdrop-blur-md border border-slate-700/50 text-white;
   }
   
-  /* Smooth transitions */
   .trans-all {
     @apply transition-all duration-300 ease-in-out;
   }
+
+  /* Reusable dark-mode card */
+  .card {
+    @apply bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-700/60;
+  }
+
+  /* Reusable dark-mode input */
+  .input-field {
+    @apply bg-slate-50 border-slate-200 text-slate-800 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400;
+  }
 }
 
-/* Scrollbar styling agar lebih premium di PC */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -55,17 +64,19 @@
   background: #cbd5e1;
   border-radius: 10px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Print CSS khusus untuk Struk Thermal 58mm */
+/* Print CSS */
 @media print {
   @page {
     margin: 0;
     size: 58mm auto;
   }
-  
   body {
     margin: 0;
     padding: 0;
@@ -73,13 +84,9 @@
     print-color-adjust: exact;
     background: white;
   }
-
-  /* Sembunyikan elemen utama */
   .print\:hidden {
     display: none !important;
   }
-
-  /* Tampilkan area khusus cetak */
   .print\:block {
     display: block !important;
   }
