@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Search, Plus, Minus, Trash2, Printer } from 'lucide-react';
 
 export default function Pos() {
-  const [cart, setCart] = useState([
+  const [cart] = useState([
     { id: 1, name: 'Buku Tulis Sidu 38 Lembar', price: 3500, qty: 2 },
     { id: 2, name: 'Pulpen Faster Hitam', price: 2000, qty: 1 }
   ]);

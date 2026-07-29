@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Search, MoreVertical, RefreshCw } from 'lucide-react';
+import { Plus, MoreVertical, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Item {
