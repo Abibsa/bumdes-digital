@@ -3,7 +3,7 @@ import { FileText, TrendingUp, DollarSign, Download, X, ArrowDownCircle, ArrowUp
 import { supabase } from '../lib/supabase';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 export default function Akuntansi() {
   const [activeTab, setActiveTab] = useState<'laba-rugi' | 'neraca' | 'jurnal'>('laba-rugi');
@@ -154,13 +154,14 @@ export default function Akuntansi() {
   const exportLabaRugiExcel = () => {
     const data = [
       ['LAPORAN LABA RUGI BUMDES NOTO MULYO'],
+      ['TANGGAL CETAK: ' + new Date().toLocaleDateString('id-ID')],
       [''],
-      ['PENDAPATAN'],
+      ['PENDAPATAN', 'NOMINAL (Rp)'],
       ['Pendapatan Penjualan Toko', labaRugi.pendapatanToko],
       ['Pendapatan Usaha Lainnya (Parkir, Lele, dll)', labaRugi.pendapatanLain],
       ['Total Pendapatan', labaRugi.pendapatanToko + labaRugi.pendapatanLain],
       [''],
-      ['BEBAN'],
+      ['BEBAN', 'NOMINAL (Rp)'],
       ['Harga Pokok Penjualan (HPP)', `(${labaRugi.hpp})`],
       ['LABA KOTOR', labaRugi.labaKotor],
       [''],
@@ -168,6 +169,15 @@ export default function Akuntansi() {
       ['LABA BERSIH', labaRugi.labaBersih]
     ];
     const ws = XLSX.utils.aoa_to_sheet(data);
+    
+    // Formatting lebar kolom
+    ws['!cols'] = [{ wch: 45 }, { wch: 20 }];
+    // Merge baris judul
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } }
+    ];
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Laba Rugi");
     XLSX.writeFile(wb, "Laporan_Laba_Rugi.xlsx");
@@ -181,7 +191,7 @@ export default function Akuntansi() {
 
     doc.setFontSize(12);
     doc.text("AKTIVA (ASET)", 14, 35);
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: 40,
       head: [['Nama Akun', 'Saldo (Rp)']],
       body: [
@@ -189,17 +199,23 @@ export default function Akuntansi() {
         ['Persediaan Barang', neraca.persediaan.toLocaleString('id-ID')],
         ['TOTAL AKTIVA', neraca.totalAset.toLocaleString('id-ID')]
       ],
+      theme: 'grid',
+      headStyles: { fillColor: [16, 185, 129] },
+      styles: { fontSize: 10 }
     });
 
     const finalY = (doc as any).lastAutoTable.finalY || 40;
     doc.text("PASIVA (KEWAJIBAN & EKUITAS)", 14, finalY + 15);
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: finalY + 20,
       head: [['Nama Akun', 'Saldo (Rp)']],
       body: [
         ['Modal & Laba Ditahan', neraca.modal.toLocaleString('id-ID')],
         ['TOTAL PASIVA', neraca.modal.toLocaleString('id-ID')]
       ],
+      theme: 'grid',
+      headStyles: { fillColor: [244, 63, 94] }, // Rose color for pasiva
+      styles: { fontSize: 10 }
     });
 
     doc.save("Laporan_Neraca.pdf");
