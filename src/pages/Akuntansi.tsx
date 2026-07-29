@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileText, TrendingUp, DollarSign, Download, Plus, X, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
+import { FileText, TrendingUp, DollarSign, Download, X, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -7,15 +7,15 @@ import 'jspdf-autotable';
 
 export default function Akuntansi() {
   const [activeTab, setActiveTab] = useState<'laba-rugi' | 'neraca' | 'jurnal'>('laba-rugi');
-  
+
   const [labaRugi, setLabaRugi] = useState({ pendapatanToko: 0, pendapatanLain: 0, hpp: 0, bebanOperasional: 0, labaKotor: 0, labaBersih: 0 });
   const [neraca, setNeraca] = useState({ kas: 0, persediaan: 0, totalAset: 0, modal: 0 });
   const [jurnalList, setJurnalList] = useState<any[]>([]);
-  
+
   // Pengeluaran State
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [expenseData, setExpenseData] = useState({ amount: '', desc: '' });
-  
+
   // Pemasukan Non-Toko State
   const [showIncomeModal, setShowIncomeModal] = useState(false);
   const [incomeData, setIncomeData] = useState({ amount: '', source: 'Tempat Parkir', desc: '' });
@@ -31,7 +31,7 @@ export default function Akuntansi() {
         accounts(id, code, name, type)
       `)
       .order('created_at', { ascending: false });
-    
+
     if (journals) setJurnalList(journals);
 
     let pendapatanToko = 0, pendapatanLain = 0, hpp = 0, bebanOperasional = 0;
@@ -40,18 +40,18 @@ export default function Akuntansi() {
     journals?.forEach((j: any) => {
       const accType = j.accounts?.type;
       const accCode = j.accounts?.code;
-      
+
       if (accType === 'Revenue') {
         if (accCode === '4.1.01') pendapatanToko += (j.credit - j.debit);
         else if (accCode === '4.1.02') pendapatanLain += (j.credit - j.debit);
         else pendapatanLain += (j.credit - j.debit); // fallback
       }
-      
+
       if (accType === 'Expense') {
         if (accCode === '5.1.01') hpp += (j.debit - j.credit); // HPP
         else bebanOperasional += (j.debit - j.credit); // Beban lainnya
       }
-      
+
       if (accCode === '1.1.01') kas += (j.debit - j.credit);
       if (accCode === '1.1.03') persediaan += (j.debit - j.credit);
       if (accType === 'Equity') modal += (j.credit - j.debit);
@@ -61,7 +61,7 @@ export default function Akuntansi() {
     const labaKotor = totalPendapatan - hpp;
     const labaBersih = labaKotor - bebanOperasional;
     const labaDitahan = labaBersih; // Laba bulan berjalan masuk ke modal
-    
+
     setLabaRugi({ pendapatanToko, pendapatanLain, hpp, bebanOperasional, labaKotor, labaBersih });
     setNeraca({ kas, persediaan, totalAset: kas + persediaan, modal: modal + labaDitahan });
     setLoading(false);
@@ -178,7 +178,7 @@ export default function Akuntansi() {
     const doc = new jsPDF();
     doc.setFontSize(16);
     doc.text("LAPORAN NERACA BUMDES NOTO MULYO", 14, 20);
-    
+
     doc.setFontSize(12);
     doc.text("AKTIVA (ASET)", 14, 35);
     (doc as any).autoTable({
@@ -207,7 +207,7 @@ export default function Akuntansi() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-130px)] space-y-6">
-      
+
       <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center bg-white rounded-2xl border border-slate-200 shadow-sm p-4 z-10 relative">
         <div className="flex flex-wrap gap-2 w-full xl:w-auto">
           {[
@@ -218,25 +218,24 @@ export default function Akuntansi() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 sm:flex-none flex justify-center items-center gap-2 py-2.5 px-4 rounded-xl font-bold transition-all ${
-                activeTab === tab.id 
-                  ? 'bg-primary-50 text-primary-700 shadow-sm' 
+              className={`flex-1 sm:flex-none flex justify-center items-center gap-2 py-2.5 px-4 rounded-xl font-bold transition-all ${activeTab === tab.id
+                  ? 'bg-primary-50 text-primary-700 shadow-sm'
                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
-              }`}
+                }`}
             >
               {tab.icon} {tab.name}
             </button>
           ))}
         </div>
-        
+
         <div className="flex flex-wrap gap-2 w-full xl:w-auto mt-2 xl:mt-0">
-          <button 
+          <button
             onClick={() => setShowIncomeModal(true)}
             className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2.5 rounded-xl font-bold transition-colors border border-emerald-100"
           >
             <ArrowDownCircle size={18} /> Setor Pemasukan
           </button>
-          <button 
+          <button
             onClick={() => setShowExpenseModal(true)}
             className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 py-2.5 rounded-xl font-bold transition-colors border border-rose-100"
           >
@@ -247,7 +246,7 @@ export default function Akuntansi() {
 
       <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative z-0">
         {loading && <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex items-center justify-center font-bold text-primary-600">Memuat Laporan...</div>}
-        
+
         {/* Laba Rugi */}
         {activeTab === 'laba-rugi' && (
           <div className="flex-1 overflow-auto p-4 md:p-8">
@@ -261,7 +260,7 @@ export default function Akuntansi() {
                   <Download size={18} /> Download Excel
                 </button>
               </div>
-              
+
               <div className="space-y-6">
                 <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                   <h3 className="font-extrabold text-slate-800 mb-4 border-b border-slate-200 pb-2 text-lg">PENDAPATAN</h3>
@@ -324,7 +323,7 @@ export default function Akuntansi() {
                   <Download size={18} /> Download PDF
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                 <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                   <h3 className="font-extrabold text-lg text-slate-800 mb-4 border-b-2 border-primary-600 pb-2 inline-block">AKTIVA (ASET)</h3>
@@ -418,9 +417,9 @@ export default function Akuntansi() {
             <form onSubmit={handleCatatPemasukan} className="p-6 space-y-5">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Sumber Pemasukan</label>
-                <select 
-                  value={incomeData.source} 
-                  onChange={e => setIncomeData({...incomeData, source: e.target.value})} 
+                <select
+                  value={incomeData.source}
+                  onChange={e => setIncomeData({ ...incomeData, source: e.target.value })}
                   className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-emerald-500 font-medium text-slate-800 bg-slate-50"
                 >
                   <option value="Tempat Parkir">Tempat Parkir</option>
@@ -430,11 +429,11 @@ export default function Akuntansi() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nominal Pemasukan (Rp)</label>
-                <input required type="number" min="1" value={incomeData.amount} onChange={e => setIncomeData({...incomeData, amount: e.target.value})} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-emerald-500 font-bold text-emerald-700 bg-slate-50 text-lg" placeholder="150000" />
+                <input required type="number" min="1" value={incomeData.amount} onChange={e => setIncomeData({ ...incomeData, amount: e.target.value })} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-emerald-500 font-bold text-emerald-700 bg-slate-50 text-lg" placeholder="150000" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Catatan / Rincian Singkat</label>
-                <textarea required rows={2} value={incomeData.desc} onChange={e => setIncomeData({...incomeData, desc: e.target.value})} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-emerald-500 font-medium text-slate-800 bg-slate-50" placeholder="Setoran parkir minggu ke-1..." />
+                <textarea required rows={2} value={incomeData.desc} onChange={e => setIncomeData({ ...incomeData, desc: e.target.value })} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-emerald-500 font-medium text-slate-800 bg-slate-50" placeholder="Setoran parkir minggu ke-1..." />
               </div>
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button type="button" onClick={() => setShowIncomeModal(false)} className="px-5 py-3 text-slate-600 hover:bg-slate-100 rounded-xl font-bold trans-all">Batal</button>
@@ -458,11 +457,11 @@ export default function Akuntansi() {
             <form onSubmit={handleCatatPengeluaran} className="p-6 space-y-5">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nominal Pengeluaran (Rp)</label>
-                <input required type="number" min="1" value={expenseData.amount} onChange={e => setExpenseData({...expenseData, amount: e.target.value})} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-rose-500 font-bold text-rose-700 bg-slate-50 text-lg" placeholder="50000" />
+                <input required type="number" min="1" value={expenseData.amount} onChange={e => setExpenseData({ ...expenseData, amount: e.target.value })} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-rose-500 font-bold text-rose-700 bg-slate-50 text-lg" placeholder="50000" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Keterangan / Tujuan Biaya</label>
-                <textarea required rows={3} value={expenseData.desc} onChange={e => setExpenseData({...expenseData, desc: e.target.value})} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-rose-500 font-medium text-slate-800 bg-slate-50" placeholder="Beli token listrik atau bayar kebersihan..." />
+                <textarea required rows={3} value={expenseData.desc} onChange={e => setExpenseData({ ...expenseData, desc: e.target.value })} className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-0 focus:border-rose-500 font-medium text-slate-800 bg-slate-50" placeholder="Beli token listrik atau bayar kebersihan..." />
               </div>
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
                 <button type="button" onClick={() => setShowExpenseModal(false)} className="px-5 py-3 text-slate-600 hover:bg-slate-100 rounded-xl font-bold trans-all">Batal</button>
