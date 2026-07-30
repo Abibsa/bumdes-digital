@@ -9,7 +9,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-DB-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 
 *Program Kerja Unggulan Kuliah Kerja Nyata (KKN) Angkatan XXI Tahun 2026*  
-**Diciptakan dan Dikembangkan oleh: Abib**
+**Diciptakan dan Dikembangkan oleh: Muhammad Ashab Ibnu Abdul Aziz (NIM: 231240001399)**
 
 </div>
 
@@ -94,5 +94,5 @@ node system_tester.js
 <div align="center">
   <b>Dibangun dengan 💻 dan ☕ untuk BUMDes Noto Mulyo Pulodarat</b><br>
   <i>Inovasi KKN Angkatan XXI Tahun 2026</i><br>
-  <strong>&copy; 2026 Abib</strong>
+  <strong>&copy; 2026 Muhammad Ashab Ibnu Abdul Aziz (NIM: 231240001399)</strong>
 </div>
