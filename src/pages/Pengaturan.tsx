@@ -11,7 +11,7 @@ export default function Pengaturan() {
   });
   
   const [users, setUsers] = useState<any[]>([]);
-  const [newUser, setNewUser] = useState({ name: '', role: 'Admin', email: '' });
+  const [newUser, setNewUser] = useState({ name: '', role: 'Admin', email: '', password: '' });
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -60,8 +60,19 @@ export default function Pengaturan() {
     e.preventDefault();
     setSaving(true);
     try {
-      await supabase.from('bumdes_users').insert(newUser);
-      setNewUser({ name: '', role: 'Admin', email: '' });
+      // Note: Di sistem produksi sungguhan (backend), ini akan memanggil API pembuatan user.
+      // Untuk versi frontend ini, kita mendaftarkannya ke tabel pengurus.
+      await supabase.auth.signUp({
+        email: newUser.email,
+        password: newUser.password,
+      });
+
+      await supabase.from('bumdes_users').insert({
+        name: newUser.name,
+        role: newUser.role,
+        email: newUser.email
+      });
+      setNewUser({ name: '', role: 'Admin', email: '', password: '' });
       fetchData();
       alert('Pengurus berhasil ditambahkan!');
     } catch (error) {
@@ -201,6 +212,10 @@ export default function Pengaturan() {
                     <div>
                       <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Email / Username</label>
                       <input required type="email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} className="w-full px-4 py-2.5 input-field border rounded-xl focus:border-primary-500 font-semibold text-sm" placeholder="budi@bumdes.com" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Kata Sandi (Password)</label>
+                      <input required type="password" minLength={6} value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} className="w-full px-4 py-2.5 input-field border rounded-xl focus:border-primary-500 font-semibold text-sm" placeholder="Minimal 6 karakter" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Jabatan</label>
