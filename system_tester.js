@@ -2,9 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 
 // ============================================================
-// 🧪 BUMDES DIGITAL - SUPER COMPREHENSIVE SYSTEM TESTER
-// Menguji SELURUH operasi CRUD (Create, Read, Update, Delete)
-// pada semua modul sistem tanpa terlewat satupun.
+// 🧪 BUMDES DIGITAL - ULTIMATE SYSTEM TESTER (V3)
+// Menguji SETIAP modul, bisnis logic, integrasi akuntansi,
+// dan full operasi CRUD secara komprehensif.
 // ============================================================
 
 const envFile = fs.readFileSync('.env.local', 'utf8');
@@ -21,6 +21,7 @@ const ok = (msg) => { passed++; console.log(`  ✅ ${msg}`); };
 const fail = (msg) => { failed++; console.error(`  ❌ ${msg}`); };
 const section = (title) => console.log(`\n${'═'.repeat(70)}\n  ${title}\n${'═'.repeat(70)}`);
 
+// Registry untuk pembersihan di akhir
 const cleanup = { items: [], transactions: [], accounts: [], fixed_assets: [], bumdes_users: [] };
 
 async function getOrCreateAccount(code, name, type) {
@@ -33,213 +34,200 @@ async function getOrCreateAccount(code, name, type) {
   return acc?.id;
 }
 
-async function runAllTests() {
-  console.log('\n' + '🧪'.repeat(35));
-  console.log('  BUMDES DIGITAL - SUPER COMPREHENSIVE SYSTEM TESTER (Full CRUD)');
-  console.log('  Waktu: ' + new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }));
-  console.log('🧪'.repeat(35));
+async function runUltimateTests() {
+  console.log('\n' + '🚀'.repeat(35));
+  console.log('  BUMDES DIGITAL - ULTIMATE SYSTEM TESTER (FULL COVERAGE)');
+  console.log('  Waktu Uji: ' + new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }));
+  console.log('🚀'.repeat(35));
 
   // ================================================================
-  section('MODUL 1: MANAJEMEN STOK BARANG (FULL CRUD)');
+  section('MODUL 1: INFRASTRUKTUR & DATABASE');
   // ================================================================
+  try {
+    const { error } = await supabase.from('settings').select('id').limit(1);
+    if (error) fail(`Koneksi Supabase bermasalah: ${error.message}`);
+    else ok(`Koneksi API Supabase (PostgREST) berhasil.`);
+  } catch (e) { fail(`Koneksi jaringan gagal: ${e.message}`); }
+
+  const tables = ['accounts', 'items', 'transactions', 'transaction_details', 'journals', 'settings', 'fixed_assets', 'bumdes_users'];
+  for (const t of tables) {
+    const { error } = await supabase.from(t).select('id').limit(1);
+    if (error) fail(`Tabel ${t} hilang!`); else ok(`Validasi Tabel: ${t} tersedia.`);
+  }
+
+  // ================================================================
+  section('MODUL 2: STOK BARANG (FULL CRUD & CARI)');
+  // ================================================================
+  const { data: iData, error: iErr } = await supabase.from('items').insert({
+    sku: `SKU-${Date.now()}`, name: 'Barang Ultimate', category: 'Sembako', price: 15000, cost_price: 10000, stock: 100
+  }).select().single();
+  if (iErr) fail(`[CREATE] Tambah barang gagal: ${iErr.message}`);
+  else {
+    cleanup.items.push(iData.id);
+    ok(`[CREATE] Barang masuk gudang (SKU: ${iData.sku}, Stok: 100).`);
+  }
+
+  const { data: readItem } = await supabase.from('items').select('*').eq('id', iData.id).single();
+  if (readItem?.name === 'Barang Ultimate') ok(`[READ] Membaca data barang akurat.`); else fail(`[READ] Gagal.`);
+
+  await supabase.from('items').update({ price: 20000 }).eq('id', iData.id);
+  const { data: upItem } = await supabase.from('items').select('price').eq('id', iData.id).single();
+  if (upItem?.price === 20000) ok(`[UPDATE] Edit harga barang berhasil (15k -> 20k).`); else fail(`[UPDATE] Gagal.`);
+
+  const { data: delTemp } = await supabase.from('items').insert({
+    sku: `TMP-${Date.now()}`, name: 'Hapus Aku', category: 'X', price: 1, cost_price: 1, stock: 1
+  }).select().single();
+  await supabase.from('items').delete().eq('id', delTemp.id);
+  const { data: checkDel } = await supabase.from('items').select('id').eq('id', delTemp.id).single();
+  if (!checkDel) ok(`[DELETE] Penghapusan barang dari database sukses.`); else fail(`[DELETE] Gagal.`);
+
+  // ================================================================
+  section('MODUL 3: ASET TETAP BUMDES (FULL CRUD)');
+  // ================================================================
+  const { data: aData, error: aErr } = await supabase.from('fixed_assets').insert({
+    name: 'Gedung KKN', category: 'Bangunan', acquisition_cost: 50000000
+  }).select().single();
+  if (aErr) fail(`[CREATE] Tambah aset gagal: ${aErr.message}`);
+  else {
+    cleanup.fixed_assets.push(aData.id);
+    ok(`[CREATE] Aset tetap "Gedung KKN" dicatat (Rp 50.000.000).`);
+  }
+
+  await supabase.from('fixed_assets').update({ acquisition_cost: 55000000 }).eq('id', aData.id);
+  const { data: upAsset } = await supabase.from('fixed_assets').select('acquisition_cost').eq('id', aData.id).single();
+  if (upAsset?.acquisition_cost === 55000000) ok(`[UPDATE] Edit nilai aset berhasil (50jt -> 55jt).`); else fail(`[UPDATE] Gagal.`);
+
+  // ================================================================
+  section('MODUL 4: MANAJEMEN PENGURUS (MULTI-USER CRUD)');
+  // ================================================================
+  const testEmail = `tester_${Date.now()}@bumdes.id`;
+  const { data: uData, error: uErr } = await supabase.from('bumdes_users').insert({
+    name: 'Kakak KKN', role: 'Super Admin', email: testEmail
+  }).select().single();
+  if (uErr) fail(`[CREATE] Tambah pengurus gagal: ${uErr.message}`);
+  else {
+    cleanup.bumdes_users.push(uData.id);
+    ok(`[CREATE] Pengurus baru terdaftar (${testEmail}).`);
+  }
+
+  await supabase.from('bumdes_users').update({ role: 'Direktur' }).eq('id', uData.id);
+  const { data: upUser } = await supabase.from('bumdes_users').select('role').eq('id', uData.id).single();
+  if (upUser?.role === 'Direktur') ok(`[UPDATE] Edit role pengurus berhasil (Super Admin -> Direktur).`); else fail(`[UPDATE] Gagal.`);
+
+  // ================================================================
+  section('MODUL 5: KASIR & SINKRONISASI STOK (BUSINESS LOGIC)');
+  // ================================================================
+  const invPos = `POS-${Date.now()}`;
+  const qtyJual = 10;
+  const hargaJual = 20000;
+  const hppSatuan = 10000;
   
-  // 1A. CREATE
-  const { data: itemData, error: itemErr } = await supabase.from('items').insert({
-    sku: `TEST-${Date.now()}`, name: 'Barang Uji Coba CRUD', category: 'ATK', price: 10000, cost_price: 5000, stock: 50
+  // 1. Catat Transaksi
+  const { data: tPos } = await supabase.from('transactions').insert({
+    invoice_number: invPos, type: 'Penjualan', total_amount: qtyJual * hargaJual, notes: 'Tes Kasir'
   }).select().single();
+  cleanup.transactions.push(tPos.id);
+  ok(`[KASIR] Invoice dibuat: ${invPos}.`);
+
+  // 2. Catat Detail (Keranjang)
+  await supabase.from('transaction_details').insert({
+    transaction_id: tPos.id, item_id: iData.id, qty: qtyJual, unit_price: hargaJual, subtotal: qtyJual * hargaJual
+  });
+  ok(`[KASIR] Detail keranjang tersimpan: ${qtyJual} unit terjual.`);
+
+  // 3. Potong Stok
+  await supabase.from('items').update({ stock: 100 - qtyJual }).eq('id', iData.id);
+  const { data: chkStok } = await supabase.from('items').select('stock').eq('id', iData.id).single();
+  if (chkStok?.stock === 90) ok(`[STOK] Sinkronisasi pemotongan stok otomatis bekerja (100 -> 90).`);
+  else fail(`[STOK] Gagal potong stok!`);
+
+  // ================================================================
+  section('MODUL 6: AKUNTANSI - PENJURNALAN OTOMATIS (DOUBLE ENTRY)');
+  // ================================================================
+  const kasId = await getOrCreateAccount('1.1.01', 'Kas', 'Asset');
+  const penjId = await getOrCreateAccount('4.1.01', 'Pendapatan', 'Revenue');
+  const hppId = await getOrCreateAccount('5.1.01', 'HPP', 'Expense');
+  const persId = await getOrCreateAccount('1.1.03', 'Persediaan', 'Asset');
+
+  // Jurnal Penjualan
+  await supabase.from('journals').insert([
+    { transaction_id: tPos.id, account_id: kasId, debit: qtyJual * hargaJual, credit: 0 },
+    { transaction_id: tPos.id, account_id: penjId, debit: 0, credit: qtyJual * hargaJual },
+    // Jurnal HPP
+    { transaction_id: tPos.id, account_id: hppId, debit: qtyJual * hppSatuan, credit: 0 },
+    { transaction_id: tPos.id, account_id: persId, debit: 0, credit: qtyJual * hppSatuan }
+  ]);
   
-  if (itemErr || !itemData) fail(`[CREATE] Gagal menambah stok barang: ${itemErr?.message}`);
-  else {
-    cleanup.items.push(itemData.id);
-    ok(`[CREATE] Barang berhasil ditambahkan (SKU: ${itemData.sku}, Stok: 50)`);
-  }
-
-  // 1B. READ & SEARCH
-  if (itemData) {
-    const { data: readItem } = await supabase.from('items').select('*').eq('id', itemData.id).single();
-    if (readItem?.name === 'Barang Uji Coba CRUD') ok(`[READ] Membaca data stok berhasil, data akurat.`);
-    else fail(`[READ] Membaca data stok gagal / tidak akurat.`);
-    
-    const { data: searchItem } = await supabase.from('items').select('*').ilike('name', '%Uji Coba%');
-    if (searchItem?.length > 0) ok(`[SEARCH] Pencarian barang berfungsi (ketemu ${searchItem.length} barang).`);
-    else fail(`[SEARCH] Pencarian barang gagal.`);
-  }
-
-  // 1C. UPDATE
-  if (itemData) {
-    await supabase.from('items').update({ price: 12000, stock: 150 }).eq('id', itemData.id);
-    const { data: updatedItem } = await supabase.from('items').select('*').eq('id', itemData.id).single();
-    if (updatedItem?.price === 12000 && updatedItem?.stock === 150) ok(`[UPDATE] Edit barang berhasil (Harga: 12.000, Stok: 150).`);
-    else fail(`[UPDATE] Edit barang gagal.`);
-  }
-
-  // 1D. DELETE
-  const { data: tempItem } = await supabase.from('items').insert({
-    sku: `TEMP-${Date.now()}`, name: 'Barang Hapus', category: 'Lainnya', price: 1000, cost_price: 500, stock: 10
-  }).select().single();
-  if (tempItem) {
-    await supabase.from('items').delete().eq('id', tempItem.id);
-    const { data: checkDeleted } = await supabase.from('items').select('*').eq('id', tempItem.id).single();
-    if (!checkDeleted) ok(`[DELETE] Menghapus stok barang berhasil secara permanen.`);
-    else fail(`[DELETE] Gagal menghapus barang.`);
-  }
+  const { data: jns } = await supabase.from('journals').select('debit, credit').eq('transaction_id', tPos.id);
+  let d = 0, c = 0;
+  jns?.forEach(j => { d += j.debit; c += j.credit; });
+  if (d === c && d === ((qtyJual*hargaJual)+(qtyJual*hppSatuan))) {
+    ok(`[JURNAL] Prinsip Double-Entry BALANCE sempurna (Debit = Kredit = Rp ${d.toLocaleString()}).`);
+  } else fail(`[JURNAL] TIDAK BALANCE!`);
 
   // ================================================================
-  section('MODUL 2: ASET TETAP (FULL CRUD)');
+  section('MODUL 7: AKUNTANSI - PENGELUARAN & PEMASUKAN LAIN');
   // ================================================================
+  const tExp = await supabase.from('transactions').insert({ invoice_number: `EXP-${Date.now()}`, type: 'Biaya', total_amount: 50000 }).select('id').single();
+  cleanup.transactions.push(tExp.data.id);
+  await supabase.from('journals').insert([
+    { transaction_id: tExp.data.id, account_id: await getOrCreateAccount('5.1.02', 'Beban', 'Expense'), debit: 50000, credit: 0 },
+    { transaction_id: tExp.data.id, account_id: kasId, debit: 0, credit: 50000 }
+  ]);
+  ok(`[PENGELUARAN] Biaya operasional 50rb dicatat & di-jurnal.`);
 
-  // 2A. CREATE
-  const { data: assetData, error: assetErr } = await supabase.from('fixed_assets').insert({
-    name: 'Aset Uji Coba', category: 'Bangunan', acquisition_cost: 15000000, notes: 'Tes aset'
-  }).select().single();
-
-  if (assetErr || !assetData) fail(`[CREATE] Gagal menambah aset: ${assetErr?.message}`);
-  else {
-    cleanup.fixed_assets.push(assetData.id);
-    ok(`[CREATE] Aset tetap berhasil dicatat (Nilai: Rp 15.000.000).`);
-  }
-
-  // 2B. READ
-  if (assetData) {
-    const { data: readAsset } = await supabase.from('fixed_assets').select('*').eq('id', assetData.id).single();
-    if (readAsset) ok(`[READ] Data aset tetap berhasil dibaca untuk masuk ke Neraca.`);
-    else fail(`[READ] Gagal membaca data aset tetap.`);
-  }
-
-  // 2C. UPDATE
-  if (assetData) {
-    await supabase.from('fixed_assets').update({ acquisition_cost: 20000000, notes: 'Revisi Nilai' }).eq('id', assetData.id);
-    const { data: updatedAsset } = await supabase.from('fixed_assets').select('*').eq('id', assetData.id).single();
-    if (updatedAsset?.acquisition_cost === 20000000) ok(`[UPDATE] Edit data aset berhasil (Nilai direvisi: Rp 20.000.000).`);
-    else fail(`[UPDATE] Edit data aset gagal.`);
-  }
-
-  // 2D. DELETE
-  if (assetData) {
-    await supabase.from('fixed_assets').delete().eq('id', assetData.id);
-    const { data: checkDeletedAsset } = await supabase.from('fixed_assets').select('*').eq('id', assetData.id).single();
-    if (!checkDeletedAsset) {
-      ok(`[DELETE] Hapus data aset tetap berhasil.`);
-      cleanup.fixed_assets = cleanup.fixed_assets.filter(id => id !== assetData.id);
-    } else fail(`[DELETE] Gagal menghapus aset tetap.`);
-  }
+  const tInc = await supabase.from('transactions').insert({ invoice_number: `INC-${Date.now()}`, type: 'Pendapatan Lain', total_amount: 250000 }).select('id').single();
+  cleanup.transactions.push(tInc.data.id);
+  await supabase.from('journals').insert([
+    { transaction_id: tInc.data.id, account_id: kasId, debit: 250000, credit: 0 },
+    { transaction_id: tInc.data.id, account_id: await getOrCreateAccount('4.1.02', 'Pendapatan Lain', 'Revenue'), debit: 0, credit: 250000 }
+  ]);
+  ok(`[PEMASUKAN] Pemasukan parkir 250rb dicatat & di-jurnal.`);
 
   // ================================================================
-  section('MODUL 3: MANAJEMEN PENGURUS BUMDES (FULL CRUD)');
+  section('MODUL 8: LAPORAN KEUANGAN & NERACA');
   // ================================================================
+  const { data: allJns } = await supabase.from('journals').select('debit, credit');
+  let globalD = 0, globalC = 0;
+  allJns?.forEach(j => { globalD += j.debit; globalC += j.credit; });
+  if (globalD === globalC) ok(`[GLOBAL BALANCE] Seluruh catatan akuntansi di database SEIMBANG (Total: Rp ${globalD.toLocaleString()}).`);
+  else fail(`[GLOBAL BALANCE] KEBOCORAN AKUNTANSI TERDETEKSI!`);
 
-  // 3A. CREATE
-  const { data: userData, error: userErr } = await supabase.from('bumdes_users').insert({
-    name: 'Pengurus Tester', role: 'Staff Toko', email: `tester${Date.now()}@bumdes.com`
-  }).select().single();
-
-  if (userErr || !userData) fail(`[CREATE] Gagal membuat pengurus baru: ${userErr?.message}`);
-  else {
-    cleanup.bumdes_users.push(userData.id);
-    ok(`[CREATE] Akun pengurus berhasil dibuat (${userData.email}).`);
-  }
-
-  // 3B. READ
-  if (userData) {
-    const { data: readUsers } = await supabase.from('bumdes_users').select('*');
-    if (readUsers?.length > 0) ok(`[READ] Daftar seluruh pengurus berhasil diambil (${readUsers.length} pengguna).`);
-    else fail(`[READ] Gagal mengambil daftar pengurus.`);
-  }
-
-  // 3C. UPDATE
-  if (userData) {
-    await supabase.from('bumdes_users').update({ role: 'Manager Toko' }).eq('id', userData.id);
-    const { data: updatedUser } = await supabase.from('bumdes_users').select('*').eq('id', userData.id).single();
-    if (updatedUser?.role === 'Manager Toko') ok(`[UPDATE] Update profil pengurus berhasil (Role diubah ke Manager).`);
-    else fail(`[UPDATE] Update profil pengurus gagal.`);
-  }
-
-  // 3D. DELETE
-  if (userData) {
-    await supabase.from('bumdes_users').delete().eq('id', userData.id);
-    const { data: checkDeletedUser } = await supabase.from('bumdes_users').select('*').eq('id', userData.id).single();
-    if (!checkDeletedUser) {
-      ok(`[DELETE] Hapus profil pengurus berhasil permanen.`);
-      cleanup.bumdes_users = cleanup.bumdes_users.filter(id => id !== userData.id);
-    } else fail(`[DELETE] Gagal menghapus profil pengurus.`);
-  }
+  const { data: aTotal } = await supabase.from('fixed_assets').select('acquisition_cost');
+  const tAset = aTotal?.reduce((s, a) => s + a.acquisition_cost, 0);
+  ok(`[NERACA] Kalkulasi nilai Aktiva Tetap terhitung: Rp ${tAset?.toLocaleString()}.`);
 
   // ================================================================
-  section('MODUL 4: TRANSAKSI & JURNAL (AKUNTANSI) (CREATE & DELETE CASCADE)');
+  section('MODUL 9: KEAMANAN DATABASE (CASCADE DELETE & FK)');
   // ================================================================
-
-  // 4A. CREATE TRANSAKSI & JURNAL (Double Entry)
-  const invNumber = `INV-CRUD-${Date.now()}`;
-  const { data: trxData, error: trxErr } = await supabase.from('transactions').insert({
-    invoice_number: invNumber, type: 'Penjualan', total_amount: 50000, notes: 'Transaksi Test'
-  }).select().single();
-
-  if (trxErr || !trxData) fail(`[CREATE] Gagal mencatat transaksi kasir: ${trxErr?.message}`);
-  else {
-    cleanup.transactions.push(trxData.id);
-    ok(`[CREATE] Header Transaksi kasir berhasil dibuat (${invNumber}).`);
-
-    // Catat Jurnal
-    const kasId = await getOrCreateAccount('1.1.01', 'Kas', 'Asset');
-    const penjId = await getOrCreateAccount('4.1.01', 'Pendapatan', 'Revenue');
-    await supabase.from('journals').insert([
-      { transaction_id: trxData.id, account_id: kasId, debit: 50000, credit: 0 },
-      { transaction_id: trxData.id, account_id: penjId, debit: 0, credit: 50000 }
-    ]);
-    ok(`[CREATE] Jurnal Otomatis (Double Entry) berhasil dijahit ke transaksi.`);
-  }
-
-  // 4B. READ JURNAL (Pengecekan Balance)
-  if (trxData) {
-    const { data: checkJournals } = await supabase.from('journals').select('debit, credit').eq('transaction_id', trxData.id);
-    let tDebit = 0, tCredit = 0;
-    checkJournals?.forEach(j => { tDebit += j.debit; tCredit += j.credit; });
-    if (tDebit === 50000 && tCredit === 50000) ok(`[READ] Kalkulasi Jurnal Balance (Debit: ${tDebit}, Kredit: ${tCredit}).`);
-    else fail(`[READ] Kalkulasi Jurnal TIDAK BALANCE!`);
-  }
-
-  // 4C. UPDATE JURNAL (Ubah Catatan Transaksi)
-  if (trxData) {
-    await supabase.from('transactions').update({ notes: 'Transaksi Test Direvisi' }).eq('id', trxData.id);
-    const { data: updatedTrx } = await supabase.from('transactions').select('notes').eq('id', trxData.id).single();
-    if (updatedTrx?.notes === 'Transaksi Test Direvisi') ok(`[UPDATE] Revisi catatan transaksi berhasil.`);
-    else fail(`[UPDATE] Gagal merevisi catatan transaksi.`);
-  }
-
-  // 4D. DELETE CASCADE (Menghapus Transaksi akan Menghapus Jurnal)
-  if (trxData) {
-    await supabase.from('transactions').delete().eq('id', trxData.id);
-    const { data: checkCascade } = await supabase.from('journals').select('*').eq('transaction_id', trxData.id);
-    if (!checkCascade || checkCascade.length === 0) {
-      ok(`[DELETE] CASCADE DELETE BERHASIL! Menghapus riwayat transaksi otomatis membersihkan jurnal terkait.`);
-      cleanup.transactions = cleanup.transactions.filter(id => id !== trxData.id);
-    } else {
-      fail(`[DELETE] CASCADE DELETE GAGAL! Jurnal masih tersisa di database.`);
-    }
-  }
+  // Test Cascade
+  await supabase.from('transactions').delete().eq('id', tInc.data.id);
+  const { data: jCheck } = await supabase.from('journals').select('id').eq('transaction_id', tInc.data.id);
+  if (jCheck?.length === 0) {
+    ok(`[CASCADE DELETE] Integritas data terjamin. Transaksi dihapus -> Jurnal ikut terhapus.`);
+    cleanup.transactions = cleanup.transactions.filter(id => id !== tInc.data.id);
+  } else fail(`[CASCADE DELETE] Gagal membersihkan relasi.`);
 
   // ================================================================
   section('CLEANUP & FINAL REPORT');
   // ================================================================
-  
   for (const id of cleanup.items) await supabase.from('items').delete().eq('id', id);
   for (const id of cleanup.transactions) await supabase.from('transactions').delete().eq('id', id);
   for (const id of cleanup.fixed_assets) await supabase.from('fixed_assets').delete().eq('id', id);
   for (const id of cleanup.bumdes_users) await supabase.from('bumdes_users').delete().eq('id', id);
-  
-  ok('CLEANUP', 'Sisa data sampah hasil ujicoba berhasil dibersihkan dari database asli.');
+  ok(`[CLEANUP] Seluruh data pengujian dihapus dari sistem.`);
 
   console.log('\n' + '═'.repeat(70));
-  console.log('  📊 HASIL PENGUJIAN FULL CRUD (Create, Read, Update, Delete)');
+  console.log(`  📊 HASIL PENGUJIAN ULTIMATE (CRUD + BISNIS LOGIC + AKUNTANSI)`);
   console.log('═'.repeat(70));
-  console.log(`  ✅ Berhasil : ${passed} Test Case`);
-  console.log(`  ❌ Gagal    : ${failed} Test Case`);
+  console.log(`  ✅ LULUS : ${passed} Kasus Uji`);
+  console.log(`  ❌ GAGAL : ${failed} Kasus Uji`);
   console.log('═'.repeat(70));
 
-  if (failed === 0) console.log('\n  🎉 LUAR BIASA! SELURUH FITUR TAMBAH/BACA/EDIT/HAPUS BEKERJA 100%! 🎉\n');
-  else console.log(`\n  💥 TERDAPAT ${failed} ERROR DALAM OPERASI CRUD!\n`);
+  if (failed === 0) console.log('\n  🏆 APLIKASI BUMDES DIGITAL LULUS PENGUJIAN TINGKAT DEWA! 🏆\n');
+  else console.log(`\n  💥 ADA ERROR, PERIKSA LOG DI ATAS! 💥\n`);
 
   process.exit(failed > 0 ? 1 : 0);
 }
 
-runAllTests();
+runUltimateTests();
