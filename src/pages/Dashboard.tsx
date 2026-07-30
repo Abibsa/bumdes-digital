@@ -281,61 +281,33 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
-        {/* Top Selling Products */}
-        <div className="card rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm">
-          <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-base md:text-lg mb-1">Barang Terlaris</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-4 md:mb-6">Top 5 barang paling banyak terjual</p>
-          <div className="space-y-3">
-            {topProducts.length === 0 && (
-              <p className="text-slate-400 dark:text-slate-500 text-sm italic py-4 text-center">Belum ada data penjualan.</p>
-            )}
-            {topProducts.map((p, i) => {
-              const maxQty = topProducts[0]?.qty || 1;
-              const pct = Math.round((p.qty / maxQty) * 100);
-              const colors = ['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-violet-500', 'bg-rose-500'];
-              return (
-                <div key={i} className="flex items-center gap-3 md:gap-4">
-                  <span className={`w-7 h-7 md:w-8 md:h-8 rounded-lg ${colors[i]} text-white flex items-center justify-center text-xs font-black flex-shrink-0`}>{i + 1}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-slate-700 dark:text-slate-200 text-sm truncate mr-2">{p.name}</span>
-                      <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400 whitespace-nowrap">{p.qty} terjual</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div className={`h-full ${colors[i]} rounded-full trans-all duration-1000`} style={{ width: `${pct}%` }}></div>
-                    </div>
+      {/* Barang Terlaris */}
+      <div className="card rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm">
+        <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-base md:text-lg mb-1">🏆 Barang Terlaris</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-4 md:mb-6">Top 5 barang paling banyak terjual</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 md:gap-4">
+          {topProducts.length === 0 && (
+            <p className="text-slate-400 dark:text-slate-500 text-sm italic py-4 text-center col-span-full">Belum ada data penjualan.</p>
+          )}
+          {topProducts.map((p, i) => {
+            const maxQty = topProducts[0]?.qty || 1;
+            const pct = Math.round((p.qty / maxQty) * 100);
+            const colors = ['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-violet-500', 'bg-rose-500'];
+            return (
+              <div key={i} className="flex items-center gap-3 md:gap-4">
+                <span className={`w-7 h-7 md:w-8 md:h-8 rounded-lg ${colors[i]} text-white flex items-center justify-center text-xs font-black flex-shrink-0`}>{i + 1}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-bold text-slate-700 dark:text-slate-200 text-sm truncate mr-2">{p.name}</span>
+                    <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400 whitespace-nowrap">{p.qty} terjual</span>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Status Sistem */}
-        <div className="card rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm">
-          <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-base md:text-lg mb-1">Status Sistem</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-4 md:mb-6">Semua modul berjalan dengan baik</p>
-          <div className="space-y-3">
-            {[
-              { name: 'Sistem Keamanan Login', desc: 'Supabase Auth aktif' },
-              { name: 'Sinkronisasi Database', desc: 'PostgreSQL real-time' },
-              { name: 'Modul Kasir & POS', desc: 'Cetak struk aktif' },
-              { name: 'Modul Akuntansi', desc: 'Jurnal otomatis' },
-              { name: 'Pencatatan Aset Tetap', desc: 'Terintegrasi neraca' },
-            ].map((modul, i) => (
-              <div key={i} className="flex items-center justify-between p-3 md:p-4 bg-slate-50/80 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-700 trans-all group">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 trans-all">✓</div>
-                  <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-100 text-xs md:text-sm">{modul.name}</h4>
-                    <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 font-medium">{modul.desc}</p>
+                  <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div className={`h-full ${colors[i]} rounded-full trans-all duration-1000`} style={{ width: `${pct}%` }}></div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
