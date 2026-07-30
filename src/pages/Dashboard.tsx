@@ -98,10 +98,11 @@ export default function Dashboard() {
       const totalAset = assets?.reduce((sum: number, a: any) => sum + a.acquisition_cost, 0) || 0;
 
       // Top selling products
-      const { data: txItems } = await supabase.from('transaction_items').select('item_name, quantity');
+      const { data: txItems } = await supabase.from('transaction_details').select('qty, items(name)');
       const productMap: Record<string, number> = {};
       txItems?.forEach((ti: any) => {
-        productMap[ti.item_name] = (productMap[ti.item_name] || 0) + ti.quantity;
+        const name = ti.items?.name || 'Unknown Item';
+        productMap[name] = (productMap[name] || 0) + ti.qty;
       });
       const sorted = Object.entries(productMap)
         .sort(([, a], [, b]) => b - a)
