@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Store, MapPin, Phone, Save } from 'lucide-react';
+import { Store, MapPin, Phone, Save, Users, UserPlus, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Pengaturan() {
@@ -9,22 +9,30 @@ export default function Pengaturan() {
     store_address: '',
     store_contact: ''
   });
+  
+  const [users, setUsers] = useState<any[]>([]);
+  const [newUser, setNewUser] = useState({ name: '', role: 'Admin', email: '' });
+
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'toko' | 'pengurus'>('toko');
+
+  const fetchData = async () => {
+    setLoading(true);
+    const { data: storeData } = await supabase.from('settings').select('*').single();
+    if (storeData) setSettings(storeData);
+
+    const { data: userData } = await supabase.from('bumdes_users').select('*').order('created_at');
+    if (userData) setUsers(userData);
+    
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      setLoading(true);
-      const { data } = await supabase.from('settings').select('*').single();
-      if (data) {
-        setSettings(data);
-      }
-      setLoading(false);
-    };
-    fetchSettings();
+    fetchData();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSaveToko = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     
@@ -44,68 +52,178 @@ export default function Pengaturan() {
     }
     
     setSaving(false);
-    alert('Pengaturan berhasil disimpan!');
+    alert('Pengaturan Toko berhasil disimpan!');
     window.location.reload();
   };
 
+  const handleTambahPengurus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await supabase.from('bumdes_users').insert(newUser);
+      setNewUser({ name: '', role: 'Admin', email: '' });
+      fetchData();
+      alert('Pengurus berhasil ditambahkan!');
+    } catch (error) {
+      console.error(error);
+      alert('Gagal menambah pengurus. Email mungkin sudah ada.');
+    }
+    setSaving(false);
+  };
+
+  const handleHapusPengurus = async (id: string) => {
+    if (!confirm('Yakin ingin menghapus pengurus ini?')) return;
+    await supabase.from('bumdes_users').delete().eq('id', id);
+    fetchData();
+  };
+
   return (
-    <div className="card rounded-2xl shadow-sm flex flex-col h-[calc(100vh-130px)]">
-      <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Pengaturan Profil Usaha</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Informasi ini akan ditampilkan pada kop Struk Kasir dan laporan Akuntansi.</p>
+    <div className="flex flex-col h-[calc(100vh-130px)] space-y-4">
+      <div className="flex gap-2 card rounded-2xl shadow-sm p-4 z-10 relative">
+        <button
+          onClick={() => setActiveTab('toko')}
+          className={`flex-1 sm:flex-none flex justify-center items-center gap-2 py-2.5 px-6 rounded-xl font-bold transition-all ${activeTab === 'toko'
+              ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 shadow-sm'
+              : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+        >
+          <Store size={18} /> Profil Usaha
+        </button>
+        <button
+          onClick={() => setActiveTab('pengurus')}
+          className={`flex-1 sm:flex-none flex justify-center items-center gap-2 py-2.5 px-6 rounded-xl font-bold transition-all ${activeTab === 'pengurus'
+              ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 shadow-sm'
+              : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+        >
+          <Users size={18} /> Manajemen Pengurus
+        </button>
       </div>
 
-      <div className="flex-1 p-8 overflow-y-auto">
-        {loading ? (
-          <div className="text-slate-500">Memuat pengaturan...</div>
-        ) : (
-          <form onSubmit={handleSave} className="max-w-2xl space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nama Toko / Usaha BUMDes</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Store size={18} />
-                </div>
-                <input type="text" required value={settings.store_name} onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-                />
-              </div>
+      <div className="flex-1 card rounded-2xl shadow-sm overflow-hidden flex flex-col relative z-0">
+        {loading && <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm z-20 flex items-center justify-center font-bold text-primary-600">Memuat data...</div>}
+
+        {activeTab === 'toko' && (
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+            <div className="max-w-2xl mb-8">
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Pengaturan Profil Usaha</h2>
+              <p className="text-slate-500 dark:text-slate-400 mt-1">Informasi ini akan ditampilkan pada kop Struk Kasir dan Laporan PDF/Excel.</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Alamat Lengkap</label>
-              <div className="relative">
-                <div className="absolute top-3 left-0 pl-3 flex pointer-events-none text-slate-400">
-                  <MapPin size={18} />
+            <form onSubmit={handleSaveToko} className="max-w-2xl space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nama Toko / Usaha BUMDes</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <Store size={18} />
+                  </div>
+                  <input type="text" required value={settings.store_name} onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-semibold"
+                  />
                 </div>
-                <textarea required rows={3} value={settings.store_address} onChange={(e) => setSettings({ ...settings, store_address: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-                />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">No Telepon / WhatsApp</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Phone size={18} />
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Alamat Lengkap</label>
+                <div className="relative">
+                  <div className="absolute top-3.5 left-0 pl-4 flex pointer-events-none text-slate-400">
+                    <MapPin size={18} />
+                  </div>
+                  <textarea required rows={3} value={settings.store_address} onChange={(e) => setSettings({ ...settings, store_address: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-semibold"
+                  />
                 </div>
-                <input type="text" required value={settings.store_contact} onChange={(e) => setSettings({ ...settings, store_contact: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-                />
               </div>
-            </div>
 
-            <div className="pt-6 border-t border-slate-100 dark:border-slate-700">
-              <button type="submit" disabled={saving}
-                className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-medium transition-colors disabled:opacity-50"
-              >
-                <Save size={18} />
-                {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
-              </button>
-            </div>
-          </form>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">No Telepon / WhatsApp</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <Phone size={18} />
+                  </div>
+                  <input type="text" required value={settings.store_contact} onChange={(e) => setSettings({ ...settings, store_contact: e.target.value })}
+                    className="w-full pl-12 pr-4 py-3 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+                <button type="submit" disabled={saving}
+                  className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-8 py-3.5 rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg shadow-primary-600/30 active:scale-95"
+                >
+                  <Save size={18} />
+                  {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                </button>
+              </div>
+            </form>
+          </div>
         )}
+
+        {activeTab === 'pengurus' && (
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+            <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              <div className="lg:col-span-2">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Daftar Akun Pengurus</h2>
+                <p className="text-slate-500 dark:text-slate-400 mb-6">Manajemen akses multi-user untuk para pengurus BUMDes.</p>
+                
+                <div className="space-y-3">
+                  {users.length === 0 && <p className="text-slate-500 italic">Belum ada data pengurus.</p>}
+                  {users.map(u => (
+                    <div key={u.id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black text-lg uppercase">
+                          {u.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800 dark:text-slate-100">{u.name}</h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{u.email} &bull; <span className="font-semibold text-primary-600 dark:text-primary-400">{u.role}</span></p>
+                        </div>
+                      </div>
+                      <button onClick={() => handleHapusPengurus(u.id)} className="w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 trans-all">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 sticky top-0">
+                  <h3 className="font-extrabold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-2">
+                    <UserPlus size={18} className="text-primary-600" /> Tambah Akun Baru
+                  </h3>
+                  <form onSubmit={handleTambahPengurus} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Nama Lengkap</label>
+                      <input required type="text" value={newUser.name} onChange={e => setNewUser({ ...newUser, name: e.target.value })} className="w-full px-4 py-2.5 input-field border rounded-xl focus:border-primary-500 font-semibold text-sm" placeholder="Contoh: Budi Santoso" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Email / Username</label>
+                      <input required type="email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} className="w-full px-4 py-2.5 input-field border rounded-xl focus:border-primary-500 font-semibold text-sm" placeholder="budi@bumdes.com" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Jabatan</label>
+                      <select value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })} className="w-full px-4 py-2.5 input-field border rounded-xl focus:border-primary-500 font-semibold text-sm">
+                        <option value="Direktur BUMDes">Direktur BUMDes</option>
+                        <option value="Bendahara">Bendahara</option>
+                        <option value="Sekretaris">Sekretaris</option>
+                        <option value="Admin">Admin</option>
+                      </select>
+                    </div>
+                    <div className="pt-2">
+                      <button type="submit" disabled={saving} className="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 rounded-xl font-bold transition-all shadow-md shadow-primary-600/20">
+                        {saving ? 'Menyimpan...' : 'Tambahkan Akun'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

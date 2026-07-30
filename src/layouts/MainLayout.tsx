@@ -8,11 +8,21 @@ export default function MainLayout() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const [storeInfo, setStoreInfo] = useState({ name: 'BUMDes Digital', address: 'Pulodarat, Jepara' });
+  const [userName, setUserName] = useState('Admin');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    // Ambil info toko
     supabase.from('settings').select('*').single().then(({ data }) => {
       if (data) setStoreInfo({ name: data.store_name, address: data.store_address });
+    });
+    // Ambil info user yang login
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user?.email) {
+        const namePart = data.user.email.split('@')[0];
+        // Capitalize first letter
+        setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1));
+      }
     });
   }, []);
 
@@ -117,9 +127,9 @@ export default function MainLayout() {
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <span className="text-sm font-bold text-slate-700 dark:text-slate-300 hidden sm:block">Admin Pusat</span>
-            <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black text-sm border-2 border-white dark:border-slate-800 shadow-md">
-              A
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-300 hidden sm:block">{userName}</span>
+            <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black text-sm border-2 border-white dark:border-slate-800 shadow-md uppercase">
+              {userName.charAt(0)}
             </div>
           </div>
         </header>
