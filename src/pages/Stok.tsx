@@ -202,6 +202,7 @@ export default function Stok() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>
