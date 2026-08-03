@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Pos from './pages/Pos';
 import Stok from './pages/Stok';
 import Akuntansi from './pages/Akuntansi';
+import HutangPiutang from './pages/HutangPiutang';
 import Pengaturan from './pages/Pengaturan';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="kasir" element={<Pos />} />
             <Route path="stok" element={<Stok />} />
+            <Route path="hutang-piutang" element={<HutangPiutang />} />
             <Route path="akuntansi" element={<Akuntansi />} />
             <Route path="pengaturan" element={<Pengaturan />} />
           </Route>

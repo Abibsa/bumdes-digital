@@ -113,13 +113,25 @@ export default function Pos() {
           subtotal: item.price * item.qty
         });
         await supabase.from('items').update({ stock: item.stock - item.qty }).eq('id', item.id);
+        
+        // Log movement
+        await supabase.from('item_movements').insert({
+          item_id: item.id,
+          type: 'OUT',
+          qty: item.qty,
+          unit_price: item.cost_price || 0,
+          total_price: (item.cost_price || 0) * item.qty,
+          description: `Penjualan Kasir - Nota ${invoiceNumber}`,
+          transaction_id: trx.id
+        });
+
         totalHpp += (item.cost_price || 0) * item.qty;
       }
 
-      const kasId = await getOrCreateAccount('1.1.01', 'Kas', 'Asset');
-      const penjId = await getOrCreateAccount('4.1.01', 'Pendapatan Penjualan', 'Revenue');
-      const hppId = await getOrCreateAccount('5.1.01', 'Harga Pokok Penjualan', 'Expense');
-      const persId = await getOrCreateAccount('1.1.03', 'Persediaan Barang', 'Asset');
+      const kasId = await getOrCreateAccount('1.1.01.01', 'Kas Tunai', 'Asset');
+      const penjId = await getOrCreateAccount('4.2.01.91', 'Pendapatan Penjualan Barang Dagangan', 'Revenue');
+      const hppId = await getOrCreateAccount('5.1.01.01', 'Harga Pokok Penjualan Barang Dagangan', 'Expense');
+      const persId = await getOrCreateAccount('1.1.05.01', 'Persediaan Barang Dagangan', 'Asset');
 
       await supabase.from('journals').insert([
         { transaction_id: trx.id, account_id: kasId, debit: total, credit: 0, description: `Penjualan ${invoiceNumber}` },

@@ -61,7 +61,7 @@ export default function Dashboard() {
         const month = new Date(j.created_at).getMonth();
         const year = new Date(j.created_at).getFullYear();
 
-        if (j.accounts?.code === '1.1.01') kas += (j.debit - j.credit);
+        if (j.accounts?.code.startsWith('1.1.01')) kas += (j.debit - j.credit);
         if (j.accounts?.type === 'Revenue') {
           const amount = j.credit - j.debit;
           pendapatan += amount;
@@ -72,6 +72,8 @@ export default function Dashboard() {
           let sourceName = 'Penjualan Toko';
           if (desc.includes('[Tempat Parkir]')) sourceName = 'Tempat Parkir';
           else if (desc.includes('[Pengasapan Lele]')) sourceName = 'Pengasapan Lele';
+          else if (desc.includes('[Samsat Budiman]')) sourceName = 'Samsat Budiman';
+          else if (desc.includes('[Agen Internet]')) sourceName = 'Agen Internet';
           else if (desc.includes('[Jasa Lainnya]')) sourceName = 'Jasa Lainnya';
           sourceMap[sourceName] = (sourceMap[sourceName] || 0) + amount;
         }

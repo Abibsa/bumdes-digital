@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Search, Trash2, Edit, RefreshCw, X } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, RefreshCw, X, FileText, Package } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Item {
@@ -12,17 +12,30 @@ interface Item {
   stock: number;
 }
 
+interface Movement {
+  id: string;
+  created_at: string;
+  type: string;
+  qty: number;
+  description: string;
+}
+
 export default function Stok() {
+  const [activeTab, setActiveTab] = useState<'Manajemen' | 'Kartu'>('Manajemen');
   const [inventory, setInventory] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Stok Management State
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [search, setSearch] = useState('');
-
-  // Form State
   const [formData, setFormData] = useState({
     sku: '', name: '', category: 'ATK', price: '', cost_price: '', stock: ''
   });
+
+  // Kartu Stok State
+  const [selectedItemId, setSelectedItemId] = useState<string>('');
+  const [movements, setMovements] = useState<Movement[]>([]);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -38,6 +51,25 @@ export default function Stok() {
     fetchItems();
   }, []);
 
+  const fetchMovements = async (itemId: string) => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('item_movements')
+      .select('*')
+      .eq('item_id', itemId)
+      .order('created_at', { ascending: true });
+    if (data) setMovements(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (selectedItemId) {
+      fetchMovements(selectedItemId);
+    } else {
+      setMovements([]);
+    }
+  }, [selectedItemId]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
@@ -50,9 +82,30 @@ export default function Stok() {
     };
 
     if (editingItem) {
-      await supabase.from('items').update(payload).eq('id', editingItem.id);
+      const stockDiff = payload.stock - editingItem.stock;
+      const { data: updatedItem } = await supabase.from('items').update(payload).eq('id', editingItem.id).select('id').single();
+      if (updatedItem && stockDiff !== 0) {
+        await supabase.from('item_movements').insert({
+          item_id: updatedItem.id,
+          type: stockDiff > 0 ? 'IN' : 'OUT',
+          qty: Math.abs(stockDiff),
+          unit_price: payload.cost_price,
+          total_price: payload.cost_price * Math.abs(stockDiff),
+          description: 'Penyesuaian Stok Manual'
+        });
+      }
     } else {
-      await supabase.from('items').insert(payload);
+      const { data: newItem } = await supabase.from('items').insert(payload).select('id').single();
+      if (newItem && payload.stock > 0) {
+        await supabase.from('item_movements').insert({
+          item_id: newItem.id,
+          type: 'IN',
+          qty: payload.stock,
+          unit_price: payload.cost_price,
+          total_price: payload.cost_price * payload.stock,
+          description: 'Saldo Awal Stok'
+        });
+      }
     }
 
     setShowModal(false);
@@ -71,7 +124,7 @@ export default function Stok() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Yakin ingin menghapus barang ini?')) {
+    if (confirm('Yakin ingin menghapus barang ini? Data transaksi terkait mungkin terdampak.')) {
       await supabase.from('items').delete().eq('id', id);
       fetchItems();
     }
@@ -83,133 +136,145 @@ export default function Stok() {
   );
 
   return (
-    <div className="card rounded-2xl shadow-sm flex flex-col h-[calc(100vh-130px)]">
-      <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Manajemen Stok Barang</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola data barang dagangan dan jasa BUMDes.</p>
+    <div className="flex flex-col h-[calc(100vh-130px)] space-y-4">
+      {/* Navbar Tabs */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center card rounded-2xl shadow-sm p-4 z-10">
+        <div className="flex bg-slate-100 p-1 rounded-xl">
+          <button onClick={() => setActiveTab('Manajemen')} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Manajemen' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500 hover:text-slate-700'}`}><Package size={16} /> Manajemen Stok</button>
+          <button onClick={() => setActiveTab('Kartu')} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Kartu' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500 hover:text-slate-700'}`}><FileText size={16} /> Kartu Stok</button>
         </div>
-        <div className="flex gap-2">
-          <button onClick={fetchItems} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl font-medium transition-colors">
-            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-          </button>
-          <button onClick={() => { setEditingItem(null); setFormData({ sku: '', name: '', category: 'ATK', price: '', cost_price: '', stock: '' }); setShowModal(true); }} className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-primary-600/30">
-            <Plus size={18} />
-            Tambah Barang
-          </button>
-        </div>
+        {activeTab === 'Manajemen' && (
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button onClick={fetchItems} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold border"><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
+            <button onClick={() => { setEditingItem(null); setFormData({ sku: '', name: '', category: 'ATK', price: '', cost_price: '', stock: '' }); setShowModal(true); }} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-primary-600/30"><Plus size={16} /> Tambah Barang</button>
+          </div>
+        )}
       </div>
 
-      <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari berdasarkan nama atau kode barang..." 
-            className="w-full pl-10 pr-4 py-2.5 input-field border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm font-semibold"
-          />
-        </div>
-      </div>
+      {activeTab === 'Manajemen' ? (
+        <div className="flex-1 card rounded-2xl shadow-sm border overflow-hidden flex flex-col relative bg-white">
+          <div className="p-4 border-b border-slate-200 bg-slate-50/50">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input 
+                type="text" 
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari berdasarkan nama atau kode barang..." 
+                className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-semibold"
+              />
+            </div>
+          </div>
 
-      <div className="flex-1 overflow-auto p-4 md:p-6 bg-slate-50/30 dark:bg-slate-900/30">
-        {loading ? (
-          <div className="flex items-center justify-center h-full text-slate-500 dark:text-slate-400">Memuat data dari database...</div>
-        ) : filteredItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-slate-500 dark:text-slate-400">Tidak ada data barang ditemukan.</div>
-        ) : (
-          <div className="card rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
-                    <th className="p-4 pl-6">Kode (SKU)</th>
+          <div className="flex-1 overflow-auto p-4">
+            {loading ? (
+              <div className="flex items-center justify-center h-full text-slate-500 font-bold">Memuat data...</div>
+            ) : filteredItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-slate-500">Tidak ada data barang.</div>
+            ) : (
+              <table className="w-full text-left text-sm min-w-[800px]">
+                <thead className="bg-slate-100 font-bold uppercase text-xs">
+                  <tr>
+                    <th className="p-4 rounded-tl-xl">Kode (SKU)</th>
                     <th className="p-4">Nama Barang</th>
                     <th className="p-4">Kategori</th>
-                    <th className="p-4">Harga Beli (HPP)</th>
-                    <th className="p-4">Harga Jual</th>
-                    <th className="p-4">Sisa Stok</th>
-                    <th className="p-4 text-center">Aksi</th>
+                    <th className="p-4 text-right">Harga Beli</th>
+                    <th className="p-4 text-right">Harga Jual</th>
+                    <th className="p-4 text-center">Stok</th>
+                    <th className="p-4 text-center rounded-tr-xl">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-slate-100">
                   {filteredItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-primary-50/50 dark:hover:bg-primary-950/30 transition-colors">
-                      <td className="p-4 pl-6 text-sm font-mono text-slate-500 dark:text-slate-400">{item.sku}</td>
-                      <td className="p-4 text-sm font-bold text-slate-800 dark:text-slate-100">{item.name}</td>
-                      <td className="p-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 tracking-wide uppercase">
-                          {item.category}
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm font-medium text-slate-500 dark:text-slate-400">Rp {item.cost_price?.toLocaleString('id-ID')}</td>
-                      <td className="p-4 text-sm font-extrabold text-primary-600 dark:text-primary-400">Rp {item.price.toLocaleString('id-ID')}</td>
-                      <td className="p-4">
-                        <span className={`inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold ${
-                          item.stock < 10 ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                        }`}>
-                          {item.stock} unit
-                        </span>
-                      </td>
+                    <tr key={item.id} className="hover:bg-primary-50">
+                      <td className="p-4 font-mono text-slate-500">{item.sku}</td>
+                      <td className="p-4 font-bold">{item.name}</td>
+                      <td className="p-4"><span className="px-2 py-1 rounded-full text-xs font-bold bg-slate-100">{item.category}</span></td>
+                      <td className="p-4 text-right text-slate-500">Rp {item.cost_price?.toLocaleString('id-ID')}</td>
+                      <td className="p-4 text-right font-bold text-primary-600">Rp {item.price.toLocaleString('id-ID')}</td>
+                      <td className="p-4 text-center font-black">{item.stock}</td>
                       <td className="p-4 text-center space-x-2">
-                        <button onClick={() => handleEdit(item)} className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-colors"><Edit size={14} /></button>
-                        <button onClick={() => handleDelete(item.id)} className="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-colors"><Trash2 size={14} /></button>
+                        <button onClick={() => handleEdit(item)} className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white"><Edit size={14} /></button>
+                        <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white"><Trash2 size={14} /></button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="flex-1 card rounded-2xl shadow-sm border flex flex-col relative bg-white p-4 sm:p-8">
+          <div className="max-w-4xl mx-auto w-full space-y-6">
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Buku Pembantu Persediaan</h2>
+              <p className="text-slate-500 text-sm">Lihat riwayat pergerakan stok barang masuk dan keluar.</p>
+            </div>
+            
+            <select value={selectedItemId} onChange={e => setSelectedItemId(e.target.value)} className="w-full md:w-1/2 p-3 border-2 rounded-xl font-bold bg-slate-50">
+              <option value="">-- Pilih Barang --</option>
+              {inventory.map(item => <option key={item.id} value={item.id}>{item.sku} - {item.name}</option>)}
+            </select>
 
-      {/* Modal Tambah/Edit */}
+            {selectedItemId && (
+              <div className="border rounded-xl overflow-hidden mt-6">
+                <table className="w-full text-left text-sm min-w-[600px]">
+                  <thead className="bg-slate-100 font-bold uppercase text-xs">
+                    <tr><th className="p-4">Waktu</th><th className="p-4">Keterangan</th><th className="p-4 text-center">Masuk</th><th className="p-4 text-center">Keluar</th><th className="p-4 text-center">Saldo Stok</th></tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {movements.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-slate-500 font-medium">Belum ada riwayat pergerakan stok.</td></tr>}
+                    {movements.map((m, idx) => {
+                      let saldo = 0;
+                      // Calculate running balance by summing up all previous movements
+                      for(let i=0; i<=idx; i++){
+                         saldo += (movements[i].type === 'IN' ? movements[i].qty : -movements[i].qty);
+                      }
+                      return (
+                        <tr key={m.id} className="hover:bg-slate-50">
+                          <td className="p-4">{new Date(m.created_at).toLocaleString('id-ID')}</td>
+                          <td className="p-4">{m.description}</td>
+                          <td className="p-4 text-center font-bold text-emerald-600">{m.type === 'IN' ? m.qty : '-'}</td>
+                          <td className="p-4 text-center font-bold text-rose-600">{m.type === 'OUT' ? m.qty : '-'}</td>
+                          <td className="p-4 text-center font-black">{saldo}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
-            <div className="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">{editingItem ? 'Edit Barang' : 'Tambah Barang Baru'}</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-2 bg-slate-100 dark:bg-slate-800 rounded-xl"><X size={20} /></button>
+        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h3 className="text-xl font-bold">{editingItem ? 'Edit Barang' : 'Tambah Barang Baru'}</h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-2 bg-slate-100 rounded-xl"><X size={20} /></button>
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Kode (SKU)</label>
-                <input required type="text" value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})} className="w-full px-3 py-2 input-field border rounded-lg focus:ring-2 focus:ring-primary-500 font-medium" placeholder="Contoh: ATK-001" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Barang</label>
-                <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 input-field border rounded-lg focus:ring-2 focus:ring-primary-500 font-medium" placeholder="Contoh: Buku Tulis" />
+              <input required type="text" value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="Kode (SKU)" />
+              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="Nama Barang" />
+              <div className="grid grid-cols-2 gap-4">
+                <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2">
+                  <option value="ATK">ATK</option>
+                  <option value="Kebutuhan Pokok">Kebutuhan Pokok</option>
+                  <option value="Jasa">Jasa</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+                <input required type="number" min="0" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="Stok" />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
-                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 input-field border rounded-lg focus:ring-2 focus:ring-primary-500 font-medium">
-                    <option value="ATK">ATK</option>
-                    <option value="Kebutuhan Pokok">Kebutuhan Pokok</option>
-                    <option value="Jasa">Jasa</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Stok Awal</label>
-                  <input required type="number" min="0" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} className="w-full px-3 py-2 input-field border rounded-lg focus:ring-2 focus:ring-primary-500 font-medium" />
-                </div>
+                <input required type="number" min="0" value={formData.cost_price} onChange={e => setFormData({...formData, cost_price: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="HPP" />
+                <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2 font-bold text-primary-600" placeholder="Harga Jual" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Harga Beli (HPP)</label>
-                  <input required type="number" min="0" value={formData.cost_price} onChange={e => setFormData({...formData, cost_price: e.target.value})} className="w-full px-3 py-2 input-field border rounded-lg focus:ring-2 focus:ring-primary-500 font-medium" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Harga Jual</label>
-                  <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full px-3 py-2 input-field border rounded-lg focus:ring-2 focus:ring-primary-500 font-medium text-primary-600 dark:text-primary-400" />
-                </div>
-              </div>
-              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800 mt-2">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold trans-all">Batal</button>
-                <button type="submit" className="px-5 py-2.5 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 shadow-lg shadow-primary-600/30 trans-all active:scale-95">Simpan Data</button>
+              <div className="pt-4 flex justify-end gap-3 border-t mt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2.5 text-slate-600 bg-slate-100 rounded-xl font-bold">Batal</button>
+                <button type="submit" className="px-5 py-2.5 bg-primary-600 text-white rounded-xl font-bold shadow-lg">Simpan Data</button>
               </div>
             </form>
           </div>

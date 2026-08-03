@@ -35,6 +35,7 @@ export default function MainLayout() {
     { path: '/', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
     { path: '/kasir', icon: <ShoppingCart size={20} />, label: 'Kasir (POS)' },
     { path: '/stok', icon: <Package size={20} />, label: 'Stok Barang' },
+    { path: '/hutang-piutang', icon: <FileText size={20} />, label: 'Hutang Piutang' },
     { path: '/akuntansi', icon: <FileText size={20} />, label: 'Akuntansi' },
     { path: '/pengaturan', icon: <Settings size={20} />, label: 'Pengaturan' },
   ];
