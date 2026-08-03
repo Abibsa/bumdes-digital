@@ -441,19 +441,19 @@ export default function Akuntansi() {
       {/* To satisfy the compiler and user's functionality, I will include the minimal functional modals */}
       {showIncomeModal && (
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md">
             <h3 className="text-xl font-bold mb-4">Setor Pemasukan</h3>
             <form onSubmit={handleCatatPemasukan} className="space-y-4">
-              <select value={incomeData.source} onChange={e => setIncomeData({...incomeData, source: e.target.value})} className="w-full p-3 border rounded-xl">
+              <select value={incomeData.source} onChange={e => setIncomeData({...incomeData, source: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
                 <option value="Tempat Parkir">Tempat Parkir</option>
                 <option value="Pengasapan Lele">Pengasapan Lele</option>
                 <option value="Samsat Budiman">Samsat Budiman</option>
                 <option value="Agen Internet">Agen Internet</option>
                 <option value="Jasa Lainnya">Jasa Lainnya</option>
               </select>
-              <input required type="number" value={incomeData.amount} onChange={e => setIncomeData({...incomeData, amount: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Nominal" />
-              <textarea required value={incomeData.desc} onChange={e => setIncomeData({...incomeData, desc: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Catatan" />
-              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowIncomeModal(false)} className="px-4 py-2 bg-slate-100 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-xl">Simpan</button></div>
+              <input required type="number" value={incomeData.amount} onChange={e => setIncomeData({...incomeData, amount: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Nominal" />
+              <textarea required value={incomeData.desc} onChange={e => setIncomeData({...incomeData, desc: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Catatan" />
+              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowIncomeModal(false)} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-xl">Simpan</button></div>
             </form>
           </div>
         </div>
@@ -461,12 +461,12 @@ export default function Akuntansi() {
       
       {showExpenseModal && (
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md">
             <h3 className="text-xl font-bold mb-4">Catat Pengeluaran</h3>
             <form onSubmit={handleCatatPengeluaran} className="space-y-4">
-              <input required type="number" value={expenseData.amount} onChange={e => setExpenseData({...expenseData, amount: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Nominal" />
-              <textarea required value={expenseData.desc} onChange={e => setExpenseData({...expenseData, desc: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Keterangan Beban" />
-              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowExpenseModal(false)} className="px-4 py-2 bg-slate-100 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-rose-600 text-white rounded-xl">Simpan</button></div>
+              <input required type="number" value={expenseData.amount} onChange={e => setExpenseData({...expenseData, amount: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Nominal" />
+              <textarea required value={expenseData.desc} onChange={e => setExpenseData({...expenseData, desc: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Keterangan Beban" />
+              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowExpenseModal(false)} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-rose-600 text-white rounded-xl">Simpan</button></div>
             </form>
           </div>
         </div>

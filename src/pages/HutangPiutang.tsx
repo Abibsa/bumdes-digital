@@ -202,17 +202,17 @@ export default function HutangPiutang() {
 
       {showContactModal && (
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md">
             <h3 className="text-xl font-bold mb-4">Tambah Kontak Baru</h3>
             <form onSubmit={handleAddContact} className="space-y-4">
-              <input required type="text" value={contactForm.name} onChange={e => setContactForm({...contactForm, name: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Nama Lengkap" />
-              <select value={contactForm.type} onChange={e => setContactForm({...contactForm, type: e.target.value})} className="w-full p-3 border rounded-xl">
+              <input required type="text" value={contactForm.name} onChange={e => setContactForm({...contactForm, name: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Nama Lengkap" />
+              <select value={contactForm.type} onChange={e => setContactForm({...contactForm, type: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
                 <option value="Customer">Pelanggan (Customer)</option>
                 <option value="Supplier">Pemasok (Supplier)</option>
                 <option value="Lainnya">Lainnya</option>
               </select>
-              <input type="text" value={contactForm.phone} onChange={e => setContactForm({...contactForm, phone: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="No HP (Opsional)" />
-              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowContactModal(false)} className="px-4 py-2 bg-slate-100 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-primary-600 text-white rounded-xl">Simpan</button></div>
+              <input type="text" value={contactForm.phone} onChange={e => setContactForm({...contactForm, phone: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="No HP (Opsional)" />
+              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowContactModal(false)} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-primary-600 text-white rounded-xl">Simpan</button></div>
             </form>
           </div>
         </div>
@@ -220,17 +220,17 @@ export default function HutangPiutang() {
 
       {showDebtModal && (
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md">
             <h3 className="text-xl font-bold mb-4">Catat {debtForm.type}</h3>
             <form onSubmit={handleAddDebt} className="space-y-4">
-              <select required value={debtForm.contact_id} onChange={e => setDebtForm({...debtForm, contact_id: e.target.value})} className="w-full p-3 border rounded-xl">
+              <select required value={debtForm.contact_id} onChange={e => setDebtForm({...debtForm, contact_id: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
                 <option value="">-- Pilih Pihak Terkait --</option>
                 {contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              <input required type="number" value={debtForm.amount} onChange={e => setDebtForm({...debtForm, amount: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Nominal Rp" />
-              <input type="date" value={debtForm.due_date} onChange={e => setDebtForm({...debtForm, due_date: e.target.value})} className="w-full p-3 border rounded-xl" />
-              <textarea required value={debtForm.notes} onChange={e => setDebtForm({...debtForm, notes: e.target.value})} className="w-full p-3 border rounded-xl" placeholder="Keterangan..." />
-              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowDebtModal(false)} className="px-4 py-2 bg-slate-100 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-primary-600 text-white rounded-xl">Simpan</button></div>
+              <input required type="number" value={debtForm.amount} onChange={e => setDebtForm({...debtForm, amount: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Nominal Rp" />
+              <input type="date" value={debtForm.due_date} onChange={e => setDebtForm({...debtForm, due_date: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" />
+              <textarea required value={debtForm.notes} onChange={e => setDebtForm({...debtForm, notes: e.target.value})} className="w-full p-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl" placeholder="Keterangan..." />
+              <div className="flex justify-end gap-2"><button type="button" onClick={() => setShowDebtModal(false)} className="px-4 py-2 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-xl">Batal</button><button type="submit" className="px-4 py-2 bg-primary-600 text-white rounded-xl">Simpan</button></div>
             </form>
           </div>
         </div>

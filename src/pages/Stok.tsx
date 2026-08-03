@@ -253,29 +253,29 @@ export default function Stok() {
 
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h3 className="text-xl font-bold">{editingItem ? 'Edit Barang' : 'Tambah Barang Baru'}</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-2 bg-slate-100 rounded-xl"><X size={20} /></button>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border dark:border-slate-800">
+            <div className="flex justify-between items-center p-6 border-b dark:border-slate-800">
+              <h3 className="text-xl font-bold dark:text-slate-100">{editingItem ? 'Edit Barang' : 'Tambah Barang Baru'}</h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 p-2 bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl"><X size={20} /></button>
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-4">
-              <input required type="text" value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="Kode (SKU)" />
-              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="Nama Barang" />
+              <input required type="text" value={formData.sku} onChange={e => setFormData({...formData, sku: e.target.value})} className="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:ring-2" placeholder="Kode (SKU)" />
+              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:ring-2" placeholder="Nama Barang" />
               <div className="grid grid-cols-2 gap-4">
-                <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2">
+                <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:ring-2">
                   <option value="ATK">ATK</option>
                   <option value="Kebutuhan Pokok">Kebutuhan Pokok</option>
                   <option value="Jasa">Jasa</option>
                   <option value="Lainnya">Lainnya</option>
                 </select>
-                <input required type="number" min="0" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="Stok" />
+                <input required type="number" min="0" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value})} className="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:ring-2" placeholder="Stok" />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <input required type="number" min="0" value={formData.cost_price} onChange={e => setFormData({...formData, cost_price: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2" placeholder="HPP" />
-                <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:ring-2 font-bold text-primary-600" placeholder="Harga Jual" />
+                <input required type="number" min="0" value={formData.cost_price} onChange={e => setFormData({...formData, cost_price: e.target.value})} className="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:ring-2" placeholder="HPP" />
+                <input required type="number" min="0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full px-3 py-2 border dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:ring-2 font-bold text-primary-600 dark:text-primary-400" placeholder="Harga Jual" />
               </div>
-              <div className="pt-4 flex justify-end gap-3 border-t mt-2">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2.5 text-slate-600 bg-slate-100 rounded-xl font-bold">Batal</button>
+              <div className="pt-4 flex justify-end gap-3 border-t dark:border-slate-800 mt-2">
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2.5 text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl font-bold">Batal</button>
                 <button type="submit" className="px-5 py-2.5 bg-primary-600 text-white rounded-xl font-bold shadow-lg">Simpan Data</button>
               </div>
             </form>
