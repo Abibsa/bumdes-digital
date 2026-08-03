@@ -214,7 +214,7 @@ export default function Stok() {
               <p className="text-slate-500 text-sm">Lihat riwayat pergerakan stok barang masuk dan keluar.</p>
             </div>
             
-            <select value={selectedItemId} onChange={e => setSelectedItemId(e.target.value)} className="w-full md:w-1/2 p-3 border-2 rounded-xl font-bold bg-slate-50">
+            <select value={selectedItemId} onChange={e => setSelectedItemId(e.target.value)} className="input-field w-full md:w-1/2 p-3 border-2 rounded-xl font-bold bg-slate-50">
               <option value="">-- Pilih Barang --</option>
               {inventory.map(item => <option key={item.id} value={item.id}>{item.sku} - {item.name}</option>)}
             </select>

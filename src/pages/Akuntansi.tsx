@@ -279,7 +279,7 @@ export default function Akuntansi() {
       <div className="flex-1 overflow-auto p-4 md:p-8">
         <div className="max-w-5xl mx-auto w-full space-y-4 md:space-y-6">
           <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Buku Besar</h2>
-          <select value={selectedLedgerAccount} onChange={e => setSelectedLedgerAccount(e.target.value)} className="w-full md:w-1/2 px-4 py-3 border-2 rounded-xl text-sm md:text-base">
+          <select value={selectedLedgerAccount} onChange={e => setSelectedLedgerAccount(e.target.value)} className="input-field w-full md:w-1/2 px-4 py-3 border-2 rounded-xl text-sm md:text-base">
             <option value="">-- Pilih Akun --</option>
             {accounts.map(a => <option key={a.id} value={a.id}>{a.code} - {a.name}</option>)}
           </select>
