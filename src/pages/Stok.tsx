@@ -139,38 +139,38 @@ export default function Stok() {
     <div className="flex flex-col h-[calc(100vh-130px)] space-y-4">
       {/* Navbar Tabs */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center card rounded-2xl shadow-sm p-4 z-10">
-        <div className="flex bg-slate-100 p-1 rounded-xl">
-          <button onClick={() => setActiveTab('Manajemen')} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Manajemen' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500 hover:text-slate-700'}`}><Package size={16} /> Manajemen Stok</button>
-          <button onClick={() => setActiveTab('Kartu')} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Kartu' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500 hover:text-slate-700'}`}><FileText size={16} /> Kartu Stok</button>
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+          <button onClick={() => setActiveTab('Manajemen')} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Manajemen' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary-700 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}><Package size={16} /> Manajemen Stok</button>
+          <button onClick={() => setActiveTab('Kartu')} className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Kartu' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary-700 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}><FileText size={16} /> Kartu Stok</button>
         </div>
         {activeTab === 'Manajemen' && (
           <div className="flex gap-2 w-full sm:w-auto">
-            <button onClick={fetchItems} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold border"><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
+            <button onClick={fetchItems} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl font-bold border dark:border-slate-700"><RefreshCw size={16} className={loading ? 'animate-spin' : ''} /></button>
             <button onClick={() => { setEditingItem(null); setFormData({ sku: '', name: '', category: 'ATK', price: '', cost_price: '', stock: '' }); setShowModal(true); }} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-primary-600/30"><Plus size={16} /> Tambah Barang</button>
           </div>
         )}
       </div>
 
       {activeTab === 'Manajemen' ? (
-        <div className="flex-1 card rounded-2xl shadow-sm border overflow-hidden flex flex-col relative bg-white">
-          <div className="p-4 border-b border-slate-200 bg-slate-50/50">
+        <div className="flex-1 card rounded-2xl shadow-sm border dark:border-slate-800 overflow-hidden flex flex-col relative bg-white dark:bg-slate-900">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
             <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
               <input 
                 type="text" 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari berdasarkan nama atau kode barang..." 
-                className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-semibold"
+                className="w-full pl-10 pr-4 py-2.5 border dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-semibold bg-white dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
 
           <div className="flex-1 overflow-auto p-4">
             {loading ? (
-              <div className="flex items-center justify-center h-full text-slate-500 font-bold">Memuat data...</div>
+              <div className="flex items-center justify-center h-full text-slate-500 dark:text-slate-400 font-bold">Memuat data...</div>
             ) : filteredItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-slate-500">Tidak ada data barang.</div>
+              <div className="flex flex-col items-center justify-center h-full text-slate-500 dark:text-slate-400">Tidak ada data barang.</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm min-w-[800px]">
@@ -188,15 +188,15 @@ export default function Stok() {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredItems.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
-                      <td className="p-4 font-mono text-slate-500">{item.sku}</td>
-                      <td className="p-4 font-bold">{item.name}</td>
-                      <td className="p-4"><span className="px-2 py-1 rounded-full text-xs font-bold bg-slate-100">{item.category}</span></td>
-                      <td className="p-4 text-right text-slate-500">Rp {item.cost_price?.toLocaleString('id-ID')}</td>
-                      <td className="p-4 text-right font-bold text-primary-600">Rp {item.price.toLocaleString('id-ID')}</td>
-                      <td className="p-4 text-center font-black">{item.stock}</td>
+                      <td className="p-4 font-mono text-slate-500 dark:text-slate-400">{item.sku}</td>
+                      <td className="p-4 font-bold dark:text-slate-100">{item.name}</td>
+                      <td className="p-4"><span className="px-2 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700 dark:text-slate-300">{item.category}</span></td>
+                      <td className="p-4 text-right text-slate-500 dark:text-slate-400">Rp {item.cost_price?.toLocaleString('id-ID')}</td>
+                      <td className="p-4 text-right font-bold text-primary-600 dark:text-primary-400">Rp {item.price.toLocaleString('id-ID')}</td>
+                      <td className="p-4 text-center font-black dark:text-slate-100">{item.stock}</td>
                       <td className="p-4 text-center space-x-2">
-                        <button onClick={() => handleEdit(item)} className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white"><Edit size={14} /></button>
-                        <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white"><Trash2 size={14} /></button>
+                        <button onClick={() => handleEdit(item)} className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white trans-all"><Edit size={14} /></button>
+                        <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white trans-all"><Trash2 size={14} /></button>
                       </td>
                     </tr>
                   ))}
@@ -207,26 +207,26 @@ export default function Stok() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 card rounded-2xl shadow-sm border flex flex-col relative bg-white p-4 sm:p-8">
+        <div className="flex-1 card rounded-2xl shadow-sm border dark:border-slate-800 flex flex-col relative bg-white dark:bg-slate-900 p-4 sm:p-8">
           <div className="max-w-4xl mx-auto w-full space-y-6">
             <div>
-              <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Buku Pembantu Persediaan</h2>
-              <p className="text-slate-500 text-sm">Lihat riwayat pergerakan stok barang masuk dan keluar.</p>
+              <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mb-2">Buku Pembantu Persediaan</h2>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">Lihat riwayat pergerakan stok barang masuk dan keluar.</p>
             </div>
             
-            <select value={selectedItemId} onChange={e => setSelectedItemId(e.target.value)} className="input-field w-full md:w-1/2 p-3 border-2 rounded-xl font-bold bg-slate-50">
+            <select value={selectedItemId} onChange={e => setSelectedItemId(e.target.value)} className="input-field w-full md:w-1/2 p-3 border-2 dark:border-slate-700 rounded-xl font-bold bg-slate-50 dark:bg-slate-800 dark:text-slate-100">
               <option value="">-- Pilih Barang --</option>
               {inventory.map(item => <option key={item.id} value={item.id}>{item.sku} - {item.name}</option>)}
             </select>
 
             {selectedItemId && (
-              <div className="border rounded-xl overflow-x-auto mt-6">
+              <div className="border dark:border-slate-800 rounded-xl overflow-x-auto mt-6">
                 <table className="w-full text-left text-sm min-w-[600px]">
                   <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                     <tr><th className="p-4">Waktu</th><th className="p-4">Keterangan</th><th className="p-4 text-center">Masuk</th><th className="p-4 text-center">Keluar</th><th className="p-4 text-center">Saldo Stok</th></tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {movements.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-slate-500 font-medium">Belum ada riwayat pergerakan stok.</td></tr>}
+                    {movements.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-slate-500 dark:text-slate-400 font-medium">Belum ada riwayat pergerakan stok.</td></tr>}
                     {movements.map((m, idx) => {
                       let saldo = 0;
                       // Calculate running balance by summing up all previous movements
@@ -235,11 +235,11 @@ export default function Stok() {
                       }
                       return (
                         <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
-                          <td className="p-4">{new Date(m.created_at).toLocaleString('id-ID')}</td>
-                          <td className="p-4">{m.description}</td>
-                          <td className="p-4 text-center font-bold text-emerald-600">{m.type === 'IN' ? m.qty : '-'}</td>
-                          <td className="p-4 text-center font-bold text-rose-600">{m.type === 'OUT' ? m.qty : '-'}</td>
-                          <td className="p-4 text-center font-black">{saldo}</td>
+                          <td className="p-4 dark:text-slate-300">{new Date(m.created_at).toLocaleString('id-ID')}</td>
+                          <td className="p-4 dark:text-slate-300">{m.description}</td>
+                          <td className="p-4 text-center font-bold text-emerald-600 dark:text-emerald-400">{m.type === 'IN' ? m.qty : '-'}</td>
+                          <td className="p-4 text-center font-bold text-rose-600 dark:text-rose-400">{m.type === 'OUT' ? m.qty : '-'}</td>
+                          <td className="p-4 text-center font-black dark:text-slate-100">{saldo}</td>
                         </tr>
                       )
                     })}
