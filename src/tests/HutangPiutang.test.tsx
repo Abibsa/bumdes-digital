@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import HutangPiutang from '../pages/HutangPiutang';
-import { createMockSupabaseClient } from './mocks/supabase';
 
-vi.mock('../lib/supabase', () => ({
-  supabase: createMockSupabaseClient(),
-}));
+vi.mock('../lib/supabase', async () => {
+  const { createMockSupabaseClient } = await import('./mocks/supabase');
+  return {
+    supabase: createMockSupabaseClient(),
+  };
+});
 
 describe('Hutang Piutang - Buku Pembantu', () => {
   beforeEach(() => {

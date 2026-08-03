@@ -30,6 +30,10 @@ window.print = vi.fn();
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  
   constructor() {}
   disconnect() {}
   observe() {}
@@ -37,4 +41,4 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
   unobserve() {}
-};
+} as any;

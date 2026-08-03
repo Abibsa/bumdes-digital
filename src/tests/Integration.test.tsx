@@ -4,11 +4,13 @@ import { BrowserRouter } from 'react-router-dom';
 import Pos from '../pages/Pos';
 import Akuntansi from '../pages/Akuntansi';
 import Stok from '../pages/Stok';
-import { createMockSupabaseClient } from './mocks/supabase';
 
-vi.mock('../lib/supabase', () => ({
-  supabase: createMockSupabaseClient(),
-}));
+vi.mock('../lib/supabase', async () => {
+  const { createMockSupabaseClient } = await import('./mocks/supabase');
+  return {
+    supabase: createMockSupabaseClient(),
+  };
+});
 
 describe('Integration Tests - Integrasi Antar Modul', () => {
   beforeEach(() => {

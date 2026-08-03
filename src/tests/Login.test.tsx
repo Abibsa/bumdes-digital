@@ -2,13 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Login from '../pages/Login';
-import * as supabaseModule from '../lib/supabase';
 import { createMockSupabaseClient } from './mocks/supabase';
 
 // Mock the supabase module
-vi.mock('../lib/supabase', () => ({
-  supabase: createMockSupabaseClient(),
-}));
+vi.mock('../lib/supabase', async () => {
+  const { createMockSupabaseClient } = await import('./mocks/supabase');
+  return {
+    supabase: createMockSupabaseClient(),
+  };
+});
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -82,8 +84,6 @@ describe('Login Page - Autentikasi', () => {
       error: null 
     });
 
-    vi.mocked(supabaseModule.supabase).auth.signInWithPassword = mockSupabase.auth.signInWithPassword;
-
     render(
       <BrowserRouter>
         <Login />
@@ -109,8 +109,6 @@ describe('Login Page - Autentikasi', () => {
       data: null, 
       error: { message: 'Invalid login credentials' } 
     });
-
-    vi.mocked(supabaseModule.supabase).auth.signInWithPassword = mockSupabase.auth.signInWithPassword;
 
     render(
       <BrowserRouter>
