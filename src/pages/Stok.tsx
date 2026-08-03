@@ -174,7 +174,7 @@ export default function Stok() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm min-w-[800px]">
-                  <thead className="bg-slate-100 font-bold uppercase text-xs">
+                  <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                   <tr>
                     <th className="p-4 rounded-tl-xl">Kode (SKU)</th>
                     <th className="p-4">Nama Barang</th>
@@ -185,9 +185,9 @@ export default function Stok() {
                     <th className="p-4 text-center rounded-tr-xl">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-primary-50">
+                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
                       <td className="p-4 font-mono text-slate-500">{item.sku}</td>
                       <td className="p-4 font-bold">{item.name}</td>
                       <td className="p-4"><span className="px-2 py-1 rounded-full text-xs font-bold bg-slate-100">{item.category}</span></td>
@@ -222,10 +222,10 @@ export default function Stok() {
             {selectedItemId && (
               <div className="border rounded-xl overflow-x-auto mt-6">
                 <table className="w-full text-left text-sm min-w-[600px]">
-                  <thead className="bg-slate-100 font-bold uppercase text-xs">
+                  <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                     <tr><th className="p-4">Waktu</th><th className="p-4">Keterangan</th><th className="p-4 text-center">Masuk</th><th className="p-4 text-center">Keluar</th><th className="p-4 text-center">Saldo Stok</th></tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {movements.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-slate-500 font-medium">Belum ada riwayat pergerakan stok.</td></tr>}
                     {movements.map((m, idx) => {
                       let saldo = 0;
@@ -234,7 +234,7 @@ export default function Stok() {
                          saldo += (movements[i].type === 'IN' ? movements[i].qty : -movements[i].qty);
                       }
                       return (
-                        <tr key={m.id} className="hover:bg-slate-50">
+                        <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
                           <td className="p-4">{new Date(m.created_at).toLocaleString('id-ID')}</td>
                           <td className="p-4">{m.description}</td>
                           <td className="p-4 text-center font-bold text-emerald-600">{m.type === 'IN' ? m.qty : '-'}</td>

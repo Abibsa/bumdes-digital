@@ -287,12 +287,12 @@ export default function Akuntansi() {
             <div className="card rounded-2xl overflow-hidden border">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm min-w-[700px]">
-                <thead className="bg-slate-100 font-bold uppercase text-xs">
+                <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                   <tr><th className="p-4">Tgl</th><th className="p-4">Keterangan</th><th className="p-4">Debit</th><th className="p-4">Kredit</th><th className="p-4">Saldo</th></tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {rows.map(r => (
-                    <tr key={r.id}>
+                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
                       <td className="p-4">{new Date(r.created_at).toLocaleDateString('id-ID')}</td>
                       <td className="p-4">{r.description}</td>
                       <td className="p-4">{r.debit > 0 ? r.debit.toLocaleString() : '-'}</td>
@@ -322,19 +322,19 @@ export default function Akuntansi() {
           <div className="card rounded-2xl overflow-hidden border">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm min-w-[600px]">
-              <thead className="bg-slate-100 font-bold uppercase text-xs">
+              <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                 <tr><th className="p-4 w-32">Kode</th><th className="p-4">Nama Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {activeAccounts.sort((a,b) => a.account.code.localeCompare(b.account.code)).map(b => (
-                  <tr key={b.account.id}>
+                  <tr key={b.account.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
                     <td className="p-4">{b.account.code}</td>
                     <td className="p-4 font-bold">{b.account.name}</td>
                     <td className="p-4 text-right">{(b.account.type === 'Asset' || b.account.type === 'Expense') && b.balance > 0 ? b.balance.toLocaleString('id-ID') : '-'}</td>
                     <td className="p-4 text-right">{(b.account.type !== 'Asset' && b.account.type !== 'Expense') && b.balance > 0 ? b.balance.toLocaleString('id-ID') : '-'}</td>
                   </tr>
                 ))}
-                <tr className="bg-slate-50 font-black text-primary-900">
+                <tr className="bg-slate-50 dark:bg-slate-800 font-black text-primary-900 dark:text-primary-400">
                   <td className="p-4" colSpan={2}>TOTAL</td>
                   <td className="p-4 text-right">Rp {totalDeb.toLocaleString('id-ID')}</td>
                   <td className="p-4 text-right">Rp {totalKre.toLocaleString('id-ID')}</td>
@@ -380,12 +380,12 @@ export default function Akuntansi() {
       <div className="card border shadow-sm h-full overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm min-w-[700px]">
-          <thead className="bg-slate-100 font-bold uppercase text-xs">
+          <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
             <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {journals.map(j => (
-              <tr key={j.id} className="hover:bg-primary-50">
+              <tr key={j.id} className="hover:bg-primary-50 dark:hover:bg-primary-900/20 trans-all">
                 <td className="p-4">{new Date(j.created_at).toLocaleString('id-ID')}</td>
                 <td className="p-4">{j.description}</td>
                 <td className="p-4 font-bold">{j.accounts?.code} {j.accounts?.name}</td>
