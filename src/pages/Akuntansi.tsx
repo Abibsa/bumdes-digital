@@ -221,14 +221,14 @@ export default function Akuntansi() {
         </div>
         <div className="bg-slate-50 dark:bg-slate-800/50 p-4 md:p-6 rounded-2xl border">
           <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">HARGA POKOK & LABA KOTOR</h3>
-          <div className="flex justify-between gap-2 text-sm md:text-base text-rose-600 mb-3 md:mb-4"><span>HPP</span><span className="text-right">(Rp {labaRugiData.hpp.toLocaleString('id-ID')})</span></div>
+          <div className="flex justify-between gap-2 text-sm md:text-base text-rose-600 dark:text-rose-400 mb-3 md:mb-4"><span>HPP</span><span className="text-right">(Rp {labaRugiData.hpp.toLocaleString('id-ID')})</span></div>
           <div className="flex justify-between gap-2 font-extrabold text-sm md:text-lg p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
             <span>Laba Kotor</span><span className="text-right">Rp {labaRugiData.labaKotor.toLocaleString('id-ID')}</span>
           </div>
         </div>
         <div className="bg-slate-50 dark:bg-slate-800/50 p-4 md:p-6 rounded-2xl border">
           <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">BEBAN OPERASIONAL</h3>
-          <div className="flex justify-between gap-2 text-sm md:text-base text-rose-600 mb-2"><span>Total Beban Operasional</span><span className="text-right">(Rp {labaRugiData.beban.toLocaleString('id-ID')})</span></div>
+          <div className="flex justify-between gap-2 text-sm md:text-base text-rose-600 dark:text-rose-400 mb-2"><span>Total Beban Operasional</span><span className="text-right">(Rp {labaRugiData.beban.toLocaleString('id-ID')})</span></div>
         </div>
         <div className="flex justify-between gap-2 font-black text-base md:text-2xl text-white bg-primary-900 p-4 md:p-6 rounded-2xl shadow-xl">
           <span>LABA BERSIH</span><span className="text-right">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span>
@@ -254,7 +254,7 @@ export default function Akuntansi() {
             <h3 className="font-extrabold text-lg mb-4 border-b-2 border-rose-500 pb-2">PASIVA (KEWAJIBAN & EKUITAS)</h3>
             <div className="flex justify-between mb-2"><span>Kewajiban</span><span className="font-bold">Rp {neracaData.kewajiban.toLocaleString('id-ID')}</span></div>
             <div className="flex justify-between mb-2"><span>Modal Ekuitas</span><span className="font-bold">Rp {neracaData.ekuitas.toLocaleString('id-ID')}</span></div>
-            <div className="flex justify-between mb-4"><span>Laba Berjalan</span><span className="font-bold text-emerald-600">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
+            <div className="flex justify-between mb-4"><span>Laba Berjalan</span><span className="font-bold text-emerald-600 dark:text-emerald-400">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
             <div className="flex justify-between font-extrabold bg-rose-50 text-rose-700 p-4 rounded-xl">
               <span>Total Pasiva</span><span>Rp {neracaData.totalPasiva.toLocaleString('id-ID')}</span>
             </div>
@@ -354,7 +354,7 @@ export default function Akuntansi() {
         <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Perubahan Ekuitas (LPE)</h2>
         <div className="card rounded-2xl p-4 md:p-6 border space-y-3 md:space-y-4">
           <div className="flex justify-between gap-2 text-sm md:text-base"><span>Modal Awal (Ekuitas)</span><span className="font-bold text-right">Rp {neracaData.ekuitas.toLocaleString('id-ID')}</span></div>
-          <div className="flex justify-between gap-2 text-sm md:text-base text-emerald-600"><span>Laba (Rugi) Periode Berjalan</span><span className="font-bold text-right">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
+          <div className="flex justify-between gap-2 text-sm md:text-base text-emerald-600 dark:text-emerald-400"><span>Laba (Rugi) Periode Berjalan</span><span className="font-bold text-right">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
           <div className="flex justify-between gap-2 font-extrabold border-t pt-3 md:pt-4 text-sm md:text-lg"><span>Ekuitas Akhir</span><span className="text-right">Rp {(neracaData.ekuitas + labaRugiData.labaBersih).toLocaleString('id-ID')}</span></div>
         </div>
       </div>
@@ -389,8 +389,8 @@ export default function Akuntansi() {
                 <td className="p-4">{new Date(j.created_at).toLocaleString('id-ID')}</td>
                 <td className="p-4">{j.description}</td>
                 <td className="p-4 font-bold">{j.accounts?.code} {j.accounts?.name}</td>
-                <td className="p-4 text-right text-emerald-600">{j.debit > 0 ? j.debit.toLocaleString() : '-'}</td>
-                <td className="p-4 text-right text-rose-600">{j.credit > 0 ? j.credit.toLocaleString() : '-'}</td>
+                <td className={`p-4 text-right font-medium ${j.debit > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.debit > 0 ? j.debit.toLocaleString('id-ID') : '-'}</td>
+                <td className={`p-4 text-right font-medium ${j.credit > 0 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.credit > 0 ? j.credit.toLocaleString('id-ID') : '-'}</td>
               </tr>
             ))}
           </tbody>
