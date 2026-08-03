@@ -213,25 +213,25 @@ export default function Akuntansi() {
   // UI Render function pieces
   const renderLabaRugi = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
-      <div className="max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Laba Rugi</h2>
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border">
-          <h3 className="font-bold text-lg mb-4">PENDAPATAN</h3>
-          <div className="flex justify-between"><span>Total Pendapatan</span><span className="font-bold">Rp {labaRugiData.pendapatan.toLocaleString('id-ID')}</span></div>
+      <div className="max-w-3xl mx-auto w-full space-y-4 md:space-y-6">
+        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Laba Rugi</h2>
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 md:p-6 rounded-2xl border">
+          <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">PENDAPATAN</h3>
+          <div className="flex justify-between gap-2 text-sm md:text-base"><span>Total Pendapatan</span><span className="font-bold text-right">Rp {labaRugiData.pendapatan.toLocaleString('id-ID')}</span></div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border">
-          <h3 className="font-bold text-lg mb-4">HARGA POKOK & LABA KOTOR</h3>
-          <div className="flex justify-between text-rose-600 mb-4"><span>HPP</span><span>(Rp {labaRugiData.hpp.toLocaleString('id-ID')})</span></div>
-          <div className="flex justify-between font-extrabold text-lg p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
-            <span>Laba Kotor</span><span>Rp {labaRugiData.labaKotor.toLocaleString('id-ID')}</span>
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 md:p-6 rounded-2xl border">
+          <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">HARGA POKOK & LABA KOTOR</h3>
+          <div className="flex justify-between gap-2 text-sm md:text-base text-rose-600 mb-3 md:mb-4"><span>HPP</span><span className="text-right">(Rp {labaRugiData.hpp.toLocaleString('id-ID')})</span></div>
+          <div className="flex justify-between gap-2 font-extrabold text-sm md:text-lg p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+            <span>Laba Kotor</span><span className="text-right">Rp {labaRugiData.labaKotor.toLocaleString('id-ID')}</span>
           </div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border">
-          <h3 className="font-bold text-lg mb-4">BEBAN OPERASIONAL</h3>
-          <div className="flex justify-between text-rose-600 mb-2"><span>Total Beban Operasional</span><span>(Rp {labaRugiData.beban.toLocaleString('id-ID')})</span></div>
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 md:p-6 rounded-2xl border">
+          <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">BEBAN OPERASIONAL</h3>
+          <div className="flex justify-between gap-2 text-sm md:text-base text-rose-600 mb-2"><span>Total Beban Operasional</span><span className="text-right">(Rp {labaRugiData.beban.toLocaleString('id-ID')})</span></div>
         </div>
-        <div className="flex justify-between font-black text-2xl text-white bg-primary-900 p-6 rounded-2xl shadow-xl">
-          <span>LABA BERSIH</span><span>Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span>
+        <div className="flex justify-between gap-2 font-black text-base md:text-2xl text-white bg-primary-900 p-4 md:p-6 rounded-2xl shadow-xl">
+          <span>LABA BERSIH</span><span className="text-right">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span>
         </div>
       </div>
     </div>
@@ -240,8 +240,8 @@ export default function Akuntansi() {
   const renderNeraca = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-4xl mx-auto w-full">
-        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-8">Neraca (Posisi Keuangan)</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-4 md:mb-8">Neraca (Posisi Keuangan)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           <div className="card rounded-2xl p-6 shadow-sm border">
             <h3 className="font-extrabold text-lg mb-4 border-b-2 border-emerald-500 pb-2">AKTIVA (ASET)</h3>
             <div className="flex justify-between mb-2"><span>Aktiva Lancar</span><span className="font-bold">Rp {neracaData.aktivaLancar.toLocaleString('id-ID')}</span></div>
@@ -277,9 +277,9 @@ export default function Akuntansi() {
 
     return (
       <div className="flex-1 overflow-auto p-4 md:p-8">
-        <div className="max-w-5xl mx-auto w-full space-y-6">
-          <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Buku Besar</h2>
-          <select value={selectedLedgerAccount} onChange={e => setSelectedLedgerAccount(e.target.value)} className="w-full md:w-1/2 px-4 py-3 border-2 rounded-xl">
+        <div className="max-w-5xl mx-auto w-full space-y-4 md:space-y-6">
+          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Buku Besar</h2>
+          <select value={selectedLedgerAccount} onChange={e => setSelectedLedgerAccount(e.target.value)} className="w-full md:w-1/2 px-4 py-3 border-2 rounded-xl text-sm md:text-base">
             <option value="">-- Pilih Akun --</option>
             {accounts.map(a => <option key={a.id} value={a.id}>{a.code} - {a.name}</option>)}
           </select>
@@ -318,7 +318,7 @@ export default function Akuntansi() {
     return (
       <div className="flex-1 overflow-auto p-4 md:p-8">
         <div className="max-w-4xl mx-auto w-full">
-          <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-6">Neraca Saldo</h2>
+          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-4 md:mb-6">Neraca Saldo</h2>
           <div className="card rounded-2xl overflow-hidden border">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm min-w-[600px]">
@@ -351,11 +351,11 @@ export default function Akuntansi() {
   const renderLPE = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Perubahan Ekuitas (LPE)</h2>
-        <div className="card rounded-2xl p-6 border space-y-4">
-          <div className="flex justify-between"><span>Modal Awal (Ekuitas)</span><span className="font-bold">Rp {neracaData.ekuitas.toLocaleString('id-ID')}</span></div>
-          <div className="flex justify-between text-emerald-600"><span>Laba (Rugi) Periode Berjalan</span><span className="font-bold">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
-          <div className="flex justify-between font-extrabold border-t pt-4 text-lg"><span>Ekuitas Akhir</span><span>Rp {(neracaData.ekuitas + labaRugiData.labaBersih).toLocaleString('id-ID')}</span></div>
+        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Perubahan Ekuitas (LPE)</h2>
+        <div className="card rounded-2xl p-4 md:p-6 border space-y-3 md:space-y-4">
+          <div className="flex justify-between gap-2 text-sm md:text-base"><span>Modal Awal (Ekuitas)</span><span className="font-bold text-right">Rp {neracaData.ekuitas.toLocaleString('id-ID')}</span></div>
+          <div className="flex justify-between gap-2 text-sm md:text-base text-emerald-600"><span>Laba (Rugi) Periode Berjalan</span><span className="font-bold text-right">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
+          <div className="flex justify-between gap-2 font-extrabold border-t pt-3 md:pt-4 text-sm md:text-lg"><span>Ekuitas Akhir</span><span className="text-right">Rp {(neracaData.ekuitas + labaRugiData.labaBersih).toLocaleString('id-ID')}</span></div>
         </div>
       </div>
     </div>
@@ -364,12 +364,12 @@ export default function Akuntansi() {
   const renderLAK = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Arus Kas (LAK)</h2>
-        <div className="card rounded-2xl p-6 border space-y-4">
-          <div className="flex justify-between"><span>Arus Kas dari Aktivitas Operasi</span><span className="font-bold">Rp {lakData.operasi.toLocaleString('id-ID')}</span></div>
-          <div className="flex justify-between"><span>Arus Kas dari Aktivitas Investasi</span><span className="font-bold">Rp {lakData.investasi.toLocaleString('id-ID')}</span></div>
-          <div className="flex justify-between"><span>Arus Kas dari Aktivitas Pendanaan</span><span className="font-bold">Rp {lakData.pendanaan.toLocaleString('id-ID')}</span></div>
-          <div className="flex justify-between font-extrabold border-t pt-4 text-lg"><span>Kenaikan (Penurunan) Kas Bersih</span><span>Rp {lakData.total.toLocaleString('id-ID')}</span></div>
+        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Arus Kas (LAK)</h2>
+        <div className="card rounded-2xl p-4 md:p-6 border space-y-3 md:space-y-4">
+          <div className="flex justify-between gap-2 text-sm md:text-base"><span>Arus Kas dari Aktivitas Operasi</span><span className="font-bold text-right">Rp {lakData.operasi.toLocaleString('id-ID')}</span></div>
+          <div className="flex justify-between gap-2 text-sm md:text-base"><span>Arus Kas dari Aktivitas Investasi</span><span className="font-bold text-right">Rp {lakData.investasi.toLocaleString('id-ID')}</span></div>
+          <div className="flex justify-between gap-2 text-sm md:text-base"><span>Arus Kas dari Aktivitas Pendanaan</span><span className="font-bold text-right">Rp {lakData.pendanaan.toLocaleString('id-ID')}</span></div>
+          <div className="flex justify-between gap-2 font-extrabold border-t pt-3 md:pt-4 text-sm md:text-lg"><span>Kenaikan (Penurunan) Kas Bersih</span><span className="text-right">Rp {lakData.total.toLocaleString('id-ID')}</span></div>
         </div>
       </div>
     </div>
@@ -403,25 +403,25 @@ export default function Akuntansi() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-130px)] space-y-4">
       {/* Navbar Tabs */}
-      <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center card rounded-2xl shadow-sm p-4 z-10">
-        <div className="flex flex-nowrap overflow-x-auto pb-2 gap-2 w-full xl:w-auto" style={{ scrollbarWidth: 'none' }}>
+      <div className="flex flex-col gap-3 md:gap-4 card rounded-2xl shadow-sm p-3 md:p-4 z-10">
+        <div className="flex flex-nowrap overflow-x-auto gap-1.5 md:gap-2 w-full pb-1" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
           {[
-            { id: 'laba-rugi', name: 'Laba Rugi', icon: <TrendingUp size={16} /> },
-            { id: 'neraca', name: 'Neraca', icon: <Scale size={16} /> },
-            { id: 'lpe', name: 'LPE', icon: <Wallet size={16} /> },
-            { id: 'lak', name: 'LAK', icon: <Activity size={16} /> },
-            { id: 'jurnal', name: 'Buku Jurnal', icon: <FileText size={16} /> },
-            { id: 'buku-besar', name: 'Buku Besar', icon: <BookOpen size={16} /> },
-            { id: 'neraca-saldo', name: 'Neraca Saldo', icon: <DollarSign size={16} /> },
+            { id: 'laba-rugi', name: 'Laba Rugi', icon: <TrendingUp size={14} /> },
+            { id: 'neraca', name: 'Neraca', icon: <Scale size={14} /> },
+            { id: 'lpe', name: 'LPE', icon: <Wallet size={14} /> },
+            { id: 'lak', name: 'LAK', icon: <Activity size={14} /> },
+            { id: 'jurnal', name: 'Jurnal', icon: <FileText size={14} /> },
+            { id: 'buku-besar', name: 'Buku Besar', icon: <BookOpen size={14} /> },
+            { id: 'neraca-saldo', name: 'Neraca Saldo', icon: <DollarSign size={14} /> },
           ].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex items-center gap-1.5 py-2 px-3 rounded-xl text-sm font-bold trans-all whitespace-nowrap shrink-0 ${activeTab === tab.id ? 'bg-primary-50 text-primary-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex items-center gap-1 md:gap-1.5 py-2 px-2.5 md:px-3 rounded-xl text-xs md:text-sm font-bold trans-all whitespace-nowrap shrink-0 ${activeTab === tab.id ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-200' : 'text-slate-500 hover:bg-slate-50'}`}>
               {tab.icon} <span>{tab.name}</span>
             </button>
           ))}
         </div>
-        <div className="flex gap-2 w-full xl:w-auto">
-          <button onClick={() => setShowIncomeModal(true)} className="flex-1 xl:flex-none justify-center items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl font-bold border"><ArrowDownCircle size={16} /> Pemasukan</button>
-          <button onClick={() => setShowExpenseModal(true)} className="flex-1 xl:flex-none justify-center items-center gap-2 bg-rose-50 text-rose-700 px-4 py-2 rounded-xl font-bold border"><ArrowUpCircle size={16} /> Pengeluaran</button>
+        <div className="flex gap-2 w-full">
+          <button onClick={() => setShowIncomeModal(true)} className="flex-1 flex items-center justify-center gap-1.5 md:gap-2 bg-emerald-50 text-emerald-700 px-3 md:px-4 py-2.5 rounded-xl font-bold border border-emerald-200 text-xs md:text-sm"><ArrowDownCircle size={14} /> Pemasukan</button>
+          <button onClick={() => setShowExpenseModal(true)} className="flex-1 flex items-center justify-center gap-1.5 md:gap-2 bg-rose-50 text-rose-700 px-3 md:px-4 py-2.5 rounded-xl font-bold border border-rose-200 text-xs md:text-sm"><ArrowUpCircle size={14} /> Pengeluaran</button>
         </div>
       </div>
       
