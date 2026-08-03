@@ -157,22 +157,23 @@ export default function HutangPiutang() {
   const filteredDebts = debts.filter(d => d.type === activeTab);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-130px)] space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center card p-4 border relative z-10">
-        <div className="flex bg-slate-100 p-1 rounded-xl">
-          <button onClick={() => setActiveTab('Piutang')} className={`px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Piutang' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500'}`}>Buku Piutang</button>
-          <button onClick={() => setActiveTab('Utang')} className={`px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Utang' ? 'bg-white shadow-sm text-rose-700' : 'text-slate-500'}`}>Buku Utang</button>
+    <div className="flex flex-col min-h-[calc(100vh-130px)] space-y-4">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center card p-4 border relative z-10">
+        <div className="flex overflow-x-auto whitespace-nowrap scrollbar-hide bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
+          <button onClick={() => setActiveTab('Piutang')} className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Piutang' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500'}`}>Buku Piutang</button>
+          <button onClick={() => setActiveTab('Utang')} className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Utang' ? 'bg-white shadow-sm text-rose-700' : 'text-slate-500'}`}>Buku Utang</button>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setShowContactModal(true)} className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold"><Users size={16} /> Kontak</button>
-          <button onClick={() => { setDebtForm({...debtForm, type: activeTab}); setShowDebtModal(true); }} className={`flex items-center gap-2 px-4 py-2 text-white rounded-xl font-bold ${activeTab === 'Piutang' ? 'bg-primary-600' : 'bg-rose-600'}`}><Plus size={16} /> Tambah {activeTab}</button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button onClick={() => setShowContactModal(true)} className="flex-1 sm:flex-none justify-center items-center flex gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold"><Users size={16} /> Kontak</button>
+          <button onClick={() => { setDebtForm({...debtForm, type: activeTab}); setShowDebtModal(true); }} className={`flex-1 sm:flex-none justify-center items-center flex gap-2 px-4 py-2 text-white rounded-xl font-bold ${activeTab === 'Piutang' ? 'bg-primary-600' : 'bg-rose-600'}`}><Plus size={16} /> Tambah {activeTab}</button>
         </div>
       </div>
 
-      <div className="flex-1 card border p-4 sm:p-8 overflow-auto relative">
+      <div className="flex-1 card border p-4 sm:p-8 overflow-hidden relative flex flex-col">
         {loading && <div className="absolute inset-0 bg-white/60 z-20 flex items-center justify-center font-bold text-primary-600">Memuat...</div>}
-        <table className="w-full text-left text-sm min-w-[700px]">
-          <thead className="bg-slate-100 font-bold uppercase text-xs">
+        <div className="overflow-x-auto flex-1">
+          <table className="w-full text-left text-sm min-w-[700px]">
+            <thead className="bg-slate-100 font-bold uppercase text-xs">
             <tr><th className="p-4">Tanggal</th><th className="p-4">Pihak Terkait</th><th className="p-4">Jatuh Tempo</th><th className="p-4">Keterangan</th><th className="p-4 text-right">Nominal</th><th className="p-4 text-center">Status</th><th className="p-4 text-right">Aksi</th></tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -194,8 +195,9 @@ export default function HutangPiutang() {
                 </td>
               </tr>
             ))}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {showContactModal && (

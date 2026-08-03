@@ -172,8 +172,9 @@ export default function Stok() {
             ) : filteredItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-slate-500">Tidak ada data barang.</div>
             ) : (
-              <table className="w-full text-left text-sm min-w-[800px]">
-                <thead className="bg-slate-100 font-bold uppercase text-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm min-w-[800px]">
+                  <thead className="bg-slate-100 font-bold uppercase text-xs">
                   <tr>
                     <th className="p-4 rounded-tl-xl">Kode (SKU)</th>
                     <th className="p-4">Nama Barang</th>
@@ -218,7 +219,7 @@ export default function Stok() {
             </select>
 
             {selectedItemId && (
-              <div className="border rounded-xl overflow-hidden mt-6">
+              <div className="border rounded-xl overflow-x-auto mt-6">
                 <table className="w-full text-left text-sm min-w-[600px]">
                   <thead className="bg-slate-100 font-bold uppercase text-xs">
                     <tr><th className="p-4">Waktu</th><th className="p-4">Keterangan</th><th className="p-4 text-center">Masuk</th><th className="p-4 text-center">Keluar</th><th className="p-4 text-center">Saldo Stok</th></tr>

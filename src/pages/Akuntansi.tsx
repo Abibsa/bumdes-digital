@@ -285,7 +285,8 @@ export default function Akuntansi() {
           </select>
           {selectedLedgerAccount && (
             <div className="card rounded-2xl overflow-hidden border">
-              <table className="w-full text-left text-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm min-w-[700px]">
                 <thead className="bg-slate-100 font-bold uppercase text-xs">
                   <tr><th className="p-4">Tgl</th><th className="p-4">Keterangan</th><th className="p-4">Debit</th><th className="p-4">Kredit</th><th className="p-4">Saldo</th></tr>
                 </thead>
@@ -300,7 +301,8 @@ export default function Akuntansi() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           )}
         </div>
@@ -318,7 +320,8 @@ export default function Akuntansi() {
         <div className="max-w-4xl mx-auto w-full">
           <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-6">Neraca Saldo</h2>
           <div className="card rounded-2xl overflow-hidden border">
-            <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm min-w-[600px]">
               <thead className="bg-slate-100 font-bold uppercase text-xs">
                 <tr><th className="p-4 w-32">Kode</th><th className="p-4">Nama Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
               </thead>
@@ -337,7 +340,8 @@ export default function Akuntansi() {
                   <td className="p-4 text-right">Rp {totalKre.toLocaleString('id-ID')}</td>
                 </tr>
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -373,8 +377,9 @@ export default function Akuntansi() {
 
   const renderJurnal = () => (
     <div className="flex-1 overflow-auto bg-slate-50 p-4">
-      <div className="card border overflow-hidden shadow-sm h-full">
-        <table className="w-full text-left text-sm min-w-[700px]">
+      <div className="card border shadow-sm h-full overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm min-w-[700px]">
           <thead className="bg-slate-100 font-bold uppercase text-xs">
             <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
           </thead>
@@ -389,16 +394,17 @@ export default function Akuntansi() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-130px)] space-y-4">
+    <div className="flex flex-col min-h-[calc(100vh-130px)] space-y-4">
       {/* Navbar Tabs */}
       <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center card rounded-2xl shadow-sm p-4 z-10">
-        <div className="flex flex-wrap gap-2 w-full xl:w-auto">
+        <div className="flex flex-nowrap overflow-x-auto pb-2 gap-2 w-full xl:w-auto" style={{ scrollbarWidth: 'none' }}>
           {[
             { id: 'laba-rugi', name: 'Laba Rugi', icon: <TrendingUp size={16} /> },
             { id: 'neraca', name: 'Neraca', icon: <Scale size={16} /> },
@@ -408,14 +414,14 @@ export default function Akuntansi() {
             { id: 'buku-besar', name: 'Buku Besar', icon: <BookOpen size={16} /> },
             { id: 'neraca-saldo', name: 'Neraca Saldo', icon: <DollarSign size={16} /> },
           ].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex items-center gap-1.5 py-2 px-3 rounded-xl text-sm font-bold trans-all ${activeTab === tab.id ? 'bg-primary-50 text-primary-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}>
-              {tab.icon} <span className="hidden md:inline">{tab.name}</span>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex items-center gap-1.5 py-2 px-3 rounded-xl text-sm font-bold trans-all whitespace-nowrap shrink-0 ${activeTab === tab.id ? 'bg-primary-50 text-primary-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}>
+              {tab.icon} <span>{tab.name}</span>
             </button>
           ))}
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setShowIncomeModal(true)} className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl font-bold border"><ArrowDownCircle size={16} /> Pemasukan</button>
-          <button onClick={() => setShowExpenseModal(true)} className="flex items-center gap-2 bg-rose-50 text-rose-700 px-4 py-2 rounded-xl font-bold border"><ArrowUpCircle size={16} /> Pengeluaran</button>
+        <div className="flex gap-2 w-full xl:w-auto">
+          <button onClick={() => setShowIncomeModal(true)} className="flex-1 xl:flex-none justify-center items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl font-bold border"><ArrowDownCircle size={16} /> Pemasukan</button>
+          <button onClick={() => setShowExpenseModal(true)} className="flex-1 xl:flex-none justify-center items-center gap-2 bg-rose-50 text-rose-700 px-4 py-2 rounded-xl font-bold border"><ArrowUpCircle size={16} /> Pengeluaran</button>
         </div>
       </div>
       
