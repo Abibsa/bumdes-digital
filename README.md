@@ -25,35 +25,39 @@ Program Kerja (Proker) KKN ini menginisiasi transformasi digital dengan membangu
 ### 🛒 1. Kasir Pintar (Point of Sale) & Struk Thermal
 - **Transaksi Super Cepat:** Desain kasir responsif untuk tablet & mobile.
 - **Kalkulasi Cerdas:** Menghitung total belanja & kembalian secara otomatis.
-- **Cetak Struk:** Mendukung pencetakan struk ke printer *Bluetooth/USB* langsung di toko untuk kepuasan pelanggan.
+- **Otomatisasi Jurnal:** Setiap penjualan langsung tercatat sebagai Jurnal Akuntansi (Kas & Pendapatan) sekaligus mencatat Beban Pokok Penjualan (HPP) & pengurangan Persediaan.
+- **Cetak Struk:** Mendukung pencetakan struk langsung di toko untuk kepuasan pelanggan.
 
-### 📦 2. Otomatisasi Stok Gudang (Inventory Management)
+### 📦 2. Manajemen & Kartu Stok (Buku Pembantu Persediaan)
 - **Sinkronisasi Real-time:** Stok otomatis berkurang secara presisi pada setiap transaksi kasir yang berhasil.
-- **Indikator Stok Cerdas:** Visualisasi warna untuk memantau barang yang hampir habis (Kuning < 20, Merah < 10).
-- **CRUD Penuh:** Tambah, baca, ubah, dan hapus data barang dengan mudah.
+- **Kartu Stok Dinamis:** Pantau riwayat seluruh barang masuk (IN) dan keluar (OUT) lengkap dengan saldo berjalan.
+- **Indikator Stok Cerdas:** Memantau barang yang hampir habis dengan antarmuka dinamis.
 
-### ⚖️ 3. Akuntansi Kelas Enterprise (Double Entry)
-- **Jurnal Otomatis:** Setiap transaksi (Penjualan, Beban, Pendapatan Lain) akan otomatis diterjemahkan menjadi **Jurnal Akuntansi Debit & Kredit** yang 100% seimbang (Balance).
-- **Cascade Data:** Sistem yang bersih; membatalkan transaksi otomatis membersihkan jurnal riwayatnya.
+### ⚖️ 3. Akuntansi Kelas Enterprise (Standar Noto Mulyo 2025)
+Terintegrasi secara penuh dengan **Chart of Accounts (COA) 5-Level** standar BUMDes. Fitur meliputi:
+- **Buku Jurnal Umum:** Mencatat seluruh transaksi debit-kredit.
+- **Buku Besar (General Ledger):** Memfilter riwayat per akun secara spesifik untuk melihat saldo berjalan.
+- **Neraca Saldo (Trial Balance):** Memastikan keseimbangan (balance) antara seluruh aktiva, kewajiban, ekuitas, pendapatan, dan beban.
 
-### 📊 4. Pelaporan Keuangan Komprehensif
-- **Laba Rugi (Profit & Loss):** Membedah total Pendapatan Toko, Pendapatan Lain (seperti parkir), HPP, Beban Operasional, hingga mendapati **Laba Bersih**.
-- **Neraca (Balance Sheet):** Pemantauan mendalam atas Kas tunai, Persediaan Barang, hingga akumulasi **Aset Tetap BUMDes** (seperti Pembangunan Parkir 100jt, Mesin, dll).
-- **Export Data:** Unduh laporan Laba Rugi langsung ke format **PDF & Excel**.
+### 📊 4. Pelaporan Keuangan Komprehensif Real-Time
+- **Laporan Laba Rugi:** Membedah total Pendapatan, HPP, hingga Beban Operasional untuk mendapatkan **Laba Bersih**.
+- **Laporan Posisi Keuangan (Neraca):** Pemantauan mendalam atas Kas, Piutang, Persediaan, Aset Tetap, Utang, dan Ekuitas.
+- **Laporan Perubahan Ekuitas (LPE):** Mengkalkulasi otomatis penambahan modal dari SHU/Laba berjalan.
+- **Laporan Arus Kas (LAK):** Merekap arus uang masuk dan keluar.
 
-### 👥 5. Manajemen Multi-Pengurus (Multi-User)
-Mendukung kolaborasi seluruh anggota kepengurusan BUMDes:
-- **Direktur** (Akses kontrol penuh)
-- **Bendahara** (Fokus pada Laporan & Jurnal)
-- **Sekretaris & Manajer Toko** (Fokus operasional Kasir & Stok)
+### 💳 5. Buku Pembantu Utang & Piutang
+- **Catatan Pihak Terkait:** Pantau seluruh customer dan supplier BUMDes.
+- **Sistem Cicilan/Pelunasan:** Kelola status piutang warga atau utang supplier yang apabila dilunasi akan otomatis membuat Jurnal ke Kas.
+
+### 👥 6. Manajemen Multi-Pengurus (Multi-User)
+Mendukung kolaborasi seluruh anggota kepengurusan BUMDes (Direktur, Bendahara, Admin/Manajer Toko) dengan pembagian role/hak akses sistem.
 
 ## 🛠️ Stack Teknologi (Tech Stack)
-Aplikasi ini dibangun menggunakan arsitektur modern untuk menjamin kecepatan dan keandalan data:
+Aplikasi ini dibangun menggunakan arsitektur modern untuk menjamin kecepatan, keindahan desain UI/UX, dan keandalan data:
 - **Frontend Layer:** React (Vite) dengan strict TypeScript.
-- **Styling:** Tailwind CSS v4 untuk UI yang menawan & Dark Mode.
-- **Database & Backend:** Supabase (PostgreSQL) dengan *Foreign Key Integrity*.
-- **Icons & UI:** Lucide React icons.
-- **Automated Testing:** Script `system_tester.js` untuk 27 Kasus Uji Ekstrim (*Ultimate CRUD & Business Logic Testing*).
+- **Styling:** Tailwind CSS v4 untuk UI/UX kelas Premium (*Glassmorphism*, transisi mulus, dan *Dark Mode*).
+- **Database & Backend:** Supabase (PostgreSQL) dengan perlindungan *Row Level Security* (RLS) dan *Foreign Key Integrity*.
+- **Icons & Visuals:** Lucide React icons.
 
 ## 🚀 Panduan Instalasi (Quick Start)
 
@@ -75,20 +79,13 @@ VITE_SUPABASE_URL=https://[PROJECT-ID].supabase.co
 VITE_SUPABASE_ANON_KEY=eyJh...
 ```
 
+**Penting:** Jangan lupa jalankan script SQL yang ada di file `database_schema.sql` dan `database_update.sql` ke menu **SQL Editor** pada Supabase Anda untuk melakukan migrasi & seeding tabel.
+
 ### 4. Jalankan Server Development
 ```bash
 npm run dev
 ```
 Aplikasi dapat diakses di browser pada alamat `http://localhost:5173`.
-
----
-
-### 🧪 Menjalankan Automated System Tester
-Untuk memvalidasi integritas 100% logika sistem dan database (seperti balance akuntansi, sinkronisasi stok, dll), jalankan *script ultimate tester*:
-```bash
-node system_tester.js
-```
-*(Script ini akan menguji seluruh proses operasi tanpa merusak data asli BUMDes).*
 
 ---
 <div align="center">
