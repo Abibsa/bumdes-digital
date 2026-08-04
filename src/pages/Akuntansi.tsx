@@ -623,25 +623,28 @@ export default function Akuntansi() {
   );
 
   const renderJurnal = () => (
-    <div className="flex-1 overflow-auto bg-slate-50 p-4">
-      <div className="card border shadow-sm h-full overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm min-w-[700px]">
-          <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
-            <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700/60">
-            {journals.map(j => (
-              <tr key={j.id} className="hover:bg-primary-50 dark:hover:bg-primary-900/20 trans-all">
-                <td className="p-4">{new Date(j.created_at).toLocaleString('id-ID')}</td>
-                <td className="p-4">{j.description}</td>
-                <td className="p-4 font-bold">{j.accounts?.code} {j.accounts?.name}</td>
-                <td className={`p-4 text-right font-medium ${j.debit > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.debit > 0 ? j.debit.toLocaleString('id-ID') : '-'}</td>
-                <td className={`p-4 text-right font-medium ${j.credit > 0 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.credit > 0 ? j.credit.toLocaleString('id-ID') : '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-          </table>
+    <div className="flex-1 overflow-auto p-4 md:p-8">
+      <div className="max-w-6xl mx-auto w-full space-y-4 md:space-y-6">
+        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Jurnal Umum</h2>
+        <div className="card rounded-2xl overflow-hidden border">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[700px]">
+            <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
+              <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
+              {journals.map(j => (
+                <tr key={j.id} className="hover:bg-primary-50 dark:hover:bg-primary-900/20 trans-all">
+                  <td className="p-4 whitespace-nowrap text-slate-500 dark:text-slate-400">{new Date(j.created_at).toLocaleString('id-ID')}</td>
+                  <td className="p-4 text-slate-700 dark:text-slate-200">{j.description}</td>
+                  <td className="p-4 font-bold text-slate-800 dark:text-slate-100">{j.accounts?.code} {j.accounts?.name}</td>
+                  <td className={`p-4 text-right font-medium ${j.debit > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.debit > 0 ? j.debit.toLocaleString('id-ID') : '-'}</td>
+                  <td className={`p-4 text-right font-medium ${j.credit > 0 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.credit > 0 ? j.credit.toLocaleString('id-ID') : '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
