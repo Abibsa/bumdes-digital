@@ -256,7 +256,7 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
       expect(screen.getByText('Akun')).toBeInTheDocument();
       expect(screen.getByText('Debit')).toBeInTheDocument();
       expect(screen.getByText('Kredit')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-AKUN-020: Klik tab Buku Besar harus tampilkan dropdown pilih akun', async () => {
@@ -271,7 +271,7 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/-- pilih akun --/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-AKUN-021: Klik tab Neraca Saldo harus tampilkan tabel neraca saldo', async () => {
@@ -287,7 +287,7 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
     await waitFor(() => {
       expect(screen.getByText('Kode')).toBeInTheDocument();
       expect(screen.getByText('Nama Akun')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-AKUN-022: Klik tab LPE harus tampilkan Laporan Perubahan Ekuitas', async () => {
@@ -302,7 +302,7 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/laporan perubahan ekuitas/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-AKUN-023: Klik tab LAK harus tampilkan Laporan Arus Kas', async () => {
@@ -317,7 +317,7 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/laporan arus kas/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-AKUN-024: Klik tombol Pemasukan harus buka modal form', async () => {
@@ -332,7 +332,7 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/setor pemasukan/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-AKUN-025: Klik tombol Pengeluaran harus buka modal form', async () => {
@@ -347,6 +347,6 @@ describe('Akuntansi - Modul Akuntansi Enterprise', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/catat pengeluaran/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 });

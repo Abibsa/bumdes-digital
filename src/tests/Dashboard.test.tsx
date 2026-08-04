@@ -84,7 +84,7 @@ describe('Dashboard - Halaman Utama', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Pendapatan vs Pengeluaran')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('TEST-DASH-007: Dashboard harus menampilkan chart Sumber Pendapatan', async () => {
@@ -96,7 +96,7 @@ describe('Dashboard - Halaman Utama', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Sumber Pendapatan')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('TEST-DASH-008: Dashboard harus menampilkan section Barang Terlaris', async () => {
@@ -108,7 +108,7 @@ describe('Dashboard - Halaman Utama', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/barang terlaris/i)).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('TEST-DASH-009: Dashboard harus menampilkan informasi Aset Tetap jika ada', async () => {

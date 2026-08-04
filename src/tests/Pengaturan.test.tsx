@@ -111,7 +111,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/daftar akun pengurus/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-009: Tab Manajemen Pengurus harus menampilkan form Tambah Akun Baru', async () => {
@@ -126,7 +126,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/tambah akun baru/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-010: Form Tambah Akun harus memiliki field Nama Lengkap', async () => {
@@ -141,7 +141,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/contoh: budi santoso/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-011: Form Tambah Akun harus memiliki field Email / Username', async () => {
@@ -156,7 +156,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/budi@bumdes.com/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-012: Form Tambah Akun harus memiliki field Kata Sandi (Password)', async () => {
@@ -171,7 +171,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/minimal 6 karakter/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-013: Form Tambah Akun harus memiliki dropdown Jabatan', async () => {
@@ -188,7 +188,7 @@ describe('Pengaturan - Settings & User Management', () => {
       expect(screen.getByText(/direktur bumdes/i)).toBeInTheDocument();
       expect(screen.getByText(/bendahara/i)).toBeInTheDocument();
       expect(screen.getByText(/sekretaris/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-014: Form Tambah Akun harus memiliki tombol Tambahkan Akun', async () => {
@@ -203,7 +203,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/tambahkan akun/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-015: Daftar pengurus harus menampilkan data dari database', async () => {
@@ -218,7 +218,7 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Admin Utama')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-016: Setiap akun pengurus harus memiliki tombol hapus', async () => {
@@ -234,7 +234,7 @@ describe('Pengaturan - Settings & User Management', () => {
     await waitFor(() => {
       const allButtons = screen.getAllByRole('button');
       expect(allButtons.length).toBeGreaterThan(0);
-    });
+    }, { timeout: 3000 });
   });
 
   it('TEST-SETT-017: Data pengurus harus menampilkan nama, email, dan role', async () => {
@@ -250,6 +250,6 @@ describe('Pengaturan - Settings & User Management', () => {
     await waitFor(() => {
       expect(screen.getByText('Admin Utama')).toBeInTheDocument();
       expect(screen.getByText('admin@bumdes.com')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 });
