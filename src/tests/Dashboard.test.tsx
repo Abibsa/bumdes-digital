@@ -3,6 +3,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 
+// Mock react-chartjs-2 to avoid canvas rendering issues in jsdom
+vi.mock('react-chartjs-2', () => ({
+  Bar: () => <div data-testid="mock-chart-bar">Bar Chart</div>,
+  Doughnut: () => <div data-testid="mock-chart-doughnut">Doughnut Chart</div>,
+}));
+
 vi.mock('../lib/supabase', async () => {
   const { createMockSupabaseClient } = await import('./mocks/supabase');
   return {

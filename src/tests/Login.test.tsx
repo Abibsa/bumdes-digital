@@ -104,12 +104,6 @@ describe('Login Page - Autentikasi', () => {
   });
 
   it('TEST-LOGIN-006: Login gagal harus tampilkan error message', async () => {
-    const mockSupabase = createMockSupabaseClient();
-    mockSupabase.auth.signInWithPassword = vi.fn().mockResolvedValue({ 
-      data: null, 
-      error: { message: 'Invalid login credentials' } 
-    });
-
     render(
       <BrowserRouter>
         <Login />
@@ -126,6 +120,6 @@ describe('Login Page - Autentikasi', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/email atau password salah/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 });

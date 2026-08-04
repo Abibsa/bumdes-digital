@@ -124,7 +124,20 @@ export const createMockSupabaseClient = () => {
   return {
     from: mockFrom,
     auth: {
-      signInWithPassword: vi.fn().mockResolvedValue({ data: { user: { email: 'admin@bumdes.com' } }, error: null }),
+      signInWithPassword: vi.fn((credentials) => {
+        // Return error for wrong credentials
+        if (credentials.email === 'wrong@email.com' || credentials.password === 'wrongpass') {
+          return Promise.resolve({ 
+            data: { user: null, session: null }, 
+            error: { message: 'Invalid login credentials' } 
+          });
+        }
+        // Return success for correct credentials
+        return Promise.resolve({ 
+          data: { user: { email: credentials.email }, session: {} }, 
+          error: null 
+        });
+      }),
       signUp: vi.fn().mockResolvedValue({ data: {}, error: null }),
       getUser: vi.fn().mockResolvedValue({ data: { user: { email: 'admin@bumdes.com' } }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
