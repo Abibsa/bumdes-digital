@@ -249,7 +249,8 @@ describe('Pengaturan - Settings & User Management', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Admin Utama')).toBeInTheDocument();
-      expect(screen.getByText('admin@bumdes.com')).toBeInTheDocument();
+      // Use exact: false because email is in a <p> with other text (separator and role)
+      expect(screen.getByText('admin@bumdes.com', { exact: false })).toBeInTheDocument();
     }, { timeout: 3000 });
   });
 });
