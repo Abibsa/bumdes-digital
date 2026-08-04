@@ -5,8 +5,10 @@
 
 [![React](https://img.shields.io/badge/React-18.x-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-DB-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-Testing-729B1B?style=for-the-badge&logo=vitest)](https://vitest.dev/)
 
 *Program Kerja Unggulan Kuliah Kerja Nyata (KKN) Angkatan XXI Tahun 2026*  
 **Diciptakan dan Dikembangkan oleh: Muhammad Ashab Ibnu Abdul Aziz (NIM: 231240001399)**
@@ -22,41 +24,56 @@ Program Kerja (Proker) KKN ini menginisiasi transformasi digital dengan membangu
 
 ## ✨ Fitur Utama (Core Features)
 
-### 🛒 1. Kasir Pintar (Point of Sale) & Struk Thermal
+### 📊 1. Dashboard Interaktif (Chart.js)
+- **Visualisasi Data Real-Time:** Menampilkan grafik pendapatan, pengeluaran, dan tren laba menggunakan visualisasi Chart.js yang dinamis.
+- **Ringkasan Cepat:** Metrik utama (Kas, Laba, Total Penjualan, Total Aset) di satu halaman.
+
+### 🛒 2. Kasir Pintar (Point of Sale) & Struk Thermal
 - **Transaksi Super Cepat:** Desain kasir responsif untuk tablet & mobile.
 - **Kalkulasi Cerdas:** Menghitung total belanja & kembalian secara otomatis.
-- **Otomatisasi Jurnal:** Setiap penjualan langsung tercatat sebagai Jurnal Akuntansi (Kas & Pendapatan) sekaligus mencatat Beban Pokok Penjualan (HPP) & pengurangan Persediaan.
-- **Cetak Struk:** Mendukung pencetakan struk langsung di toko untuk kepuasan pelanggan.
+- **Otomatisasi Jurnal:** Setiap penjualan otomatis menjurnal ke Akuntansi (Kas, Pendapatan, HPP, Persediaan).
+- **Cetak Struk:** Fitur cetak struk kompatibel dengan printer kasir (thermal).
 
-### 📦 2. Manajemen & Kartu Stok (Buku Pembantu Persediaan)
-- **Sinkronisasi Real-time:** Stok otomatis berkurang secara presisi pada setiap transaksi kasir yang berhasil.
+### 📦 3. Manajemen & Kartu Stok (Buku Pembantu Persediaan)
+- **Sinkronisasi Real-time:** Stok otomatis berkurang presisi pada setiap transaksi POS.
 - **Kartu Stok Dinamis:** Pantau riwayat seluruh barang masuk (IN) dan keluar (OUT) lengkap dengan saldo berjalan.
-- **Indikator Stok Cerdas:** Memantau barang yang hampir habis dengan antarmuka dinamis.
+- **Visualisasi Stok Cerdas:** Indikator warna barang yang hampir habis dengan antarmuka dinamis.
 
-### ⚖️ 3. Akuntansi Kelas Enterprise (Standar Noto Mulyo 2025)
+### ⚖️ 4. Akuntansi Kelas Enterprise (Standar Noto Mulyo 2025)
 Terintegrasi secara penuh dengan **Chart of Accounts (COA) 5-Level** standar BUMDes. Fitur meliputi:
-- **Buku Jurnal Umum:** Mencatat seluruh transaksi debit-kredit.
-- **Buku Besar (General Ledger):** Memfilter riwayat per akun secara spesifik untuk melihat saldo berjalan.
+- **Buku Jurnal Umum:** Mencatat seluruh transaksi debit-kredit otomatis dan manual.
+- **Buku Besar (General Ledger):** Memfilter riwayat per akun secara spesifik untuk melihat mutasi dan saldo berjalan.
 - **Neraca Saldo (Trial Balance):** Memastikan keseimbangan (balance) antara seluruh aktiva, kewajiban, ekuitas, pendapatan, dan beban.
 
-### 📊 4. Pelaporan Keuangan Komprehensif Real-Time
-- **Laporan Laba Rugi:** Membedah total Pendapatan, HPP, hingga Beban Operasional untuk mendapatkan **Laba Bersih**.
-- **Laporan Posisi Keuangan (Neraca):** Pemantauan mendalam atas Kas, Piutang, Persediaan, Aset Tetap, Utang, dan Ekuitas.
+### 📈 5. Pelaporan Keuangan Komprehensif Real-Time
+- **Laporan Laba Rugi:** Membedah Pendapatan, HPP, hingga Beban Operasional untuk Laba Bersih.
+- **Laporan Posisi Keuangan (Neraca):** Pemantauan mendalam Kas, Piutang, Persediaan, Aset Tetap, Utang, dan Ekuitas.
 - **Laporan Perubahan Ekuitas (LPE):** Mengkalkulasi otomatis penambahan modal dari SHU/Laba berjalan.
-- **Laporan Arus Kas (LAK):** Merekap arus uang masuk dan keluar.
+- **Laporan Arus Kas (LAK):** Merekap arus uang masuk dan keluar BUMDes.
 
-### 💳 5. Buku Pembantu Utang & Piutang
-- **Catatan Pihak Terkait:** Pantau seluruh customer dan supplier BUMDes.
-- **Sistem Cicilan/Pelunasan:** Kelola status piutang warga atau utang supplier yang apabila dilunasi akan otomatis membuat Jurnal ke Kas.
+### 🖨️ 6. Export Laporan (PDF & Excel)
+- **PDF Export (pdfmake):** Unduh laporan keuangan resmi berformat PDF siap cetak lengkap dengan Kop Surat, tabel profesional, dan blok Tanda Tangan (Direktur & Bendahara).
+- **Excel Export (exceljs):** Unduh satu atau seluruh laporan ke format *Spreadsheet* (`.xlsx`) multi-sheet (Buku Besar, Neraca, Laba Rugi, dll) lengkap dengan format angka *Currency* dan border tabel siap analisa.
 
-### 👥 6. Manajemen Multi-Pengurus (Multi-User)
-Mendukung kolaborasi seluruh anggota kepengurusan BUMDes (Direktur, Bendahara, Admin/Manajer Toko) dengan pembagian role/hak akses sistem.
+### 💳 7. Buku Pembantu Utang & Piutang
+- **Catatan Pihak Terkait:** Pantau seluruh *customer* dan *supplier* BUMDes.
+- **Sistem Cicilan/Pelunasan:** Kelola status piutang warga atau utang supplier. Pelunasan otomatis menjurnal ke Kas.
+
+### 🎨 8. Tema UI/UX Premium
+- **Dark Mode Penuh:** Transisi halus antara mode terang dan gelap untuk kenyamanan mata.
+- **Responsive Layout:** 100% Mobile-friendly dan dioptimalkan untuk desktop/tablet.
+
+### 👥 9. Manajemen Multi-Pengurus & Profil BUMDes
+- Pengaturan Profil BUMDes (Nama, Alamat, Nomor Kontak).
+- Manajemen Hak Akses Multi-User untuk kolaborasi Direktur, Bendahara, dan Operator.
 
 ## 🛠️ Stack Teknologi (Tech Stack)
-Aplikasi ini dibangun menggunakan arsitektur modern untuk menjamin kecepatan, keindahan desain UI/UX, dan keandalan data:
+Aplikasi ini dibangun menggunakan arsitektur modern untuk menjamin kecepatan, keamanan, dan keandalan data:
 - **Frontend Layer:** React (Vite) dengan strict TypeScript.
-- **Styling:** Tailwind CSS v4 untuk UI/UX kelas Premium (*Glassmorphism*, transisi mulus, dan *Dark Mode*).
-- **Database & Backend:** Supabase (PostgreSQL) dengan perlindungan *Row Level Security* (RLS) dan *Foreign Key Integrity*.
+- **Styling:** Tailwind CSS v4 (*Glassmorphism*, transisi mulus, dan *Dark Mode*).
+- **Database & Backend:** Supabase (PostgreSQL) dengan perlindungan *Row Level Security* (RLS).
+- **Reporting:** `pdfmake` (Dokumen PDF) & `exceljs` (Spreadsheet).
+- **Testing:** Vitest & React Testing Library (Unit & Integration Test).
 - **Icons & Visuals:** Lucide React icons.
 
 ## 🚀 Panduan Instalasi (Quick Start)
@@ -79,13 +96,19 @@ VITE_SUPABASE_URL=https://[PROJECT-ID].supabase.co
 VITE_SUPABASE_ANON_KEY=eyJh...
 ```
 
-**Penting:** Jangan lupa jalankan script SQL yang ada di file `database_schema.sql` dan `database_update.sql` ke menu **SQL Editor** pada Supabase Anda untuk melakukan migrasi & seeding tabel.
+**Penting:** Jangan lupa jalankan script SQL yang ada di file `database_schema.sql` dan `database_update.sql` ke menu **SQL Editor** pada Supabase Anda untuk melakukan migrasi & *seeding* tabel.
 
-### 4. Jalankan Server Development
+### 4. Menjalankan Server Development
 ```bash
 npm run dev
 ```
 Aplikasi dapat diakses di browser pada alamat `http://localhost:5173`.
+
+### 5. Menjalankan Unit Test (Vitest)
+Aplikasi dilengkapi dengan *Test Suite* komprehensif (>120 Test Cases) untuk menjamin kualitas fitur dan kalkulasi akuntansi.
+```bash
+npm run test
+```
 
 ---
 <div align="center">
