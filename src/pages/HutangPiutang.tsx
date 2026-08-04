@@ -158,18 +158,18 @@ export default function HutangPiutang() {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-130px)] space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center card p-4 border relative z-10">
-        <div className="flex overflow-x-auto whitespace-nowrap scrollbar-hide bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
-          <button onClick={() => setActiveTab('Piutang')} className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Piutang' ? 'bg-white shadow-sm text-primary-700' : 'text-slate-500'}`}>Buku Piutang</button>
-          <button onClick={() => setActiveTab('Utang')} className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Utang' ? 'bg-white shadow-sm text-rose-700' : 'text-slate-500'}`}>Buku Utang</button>
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-white dark:bg-slate-900/40 p-4 border dark:border-slate-800/60 rounded-2xl shadow-sm relative z-10">
+        <div className="flex overflow-x-auto whitespace-nowrap scrollbar-hide bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl w-full sm:w-auto">
+          <button onClick={() => setActiveTab('Piutang')} className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Piutang' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary-700 dark:text-primary-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}>Buku Piutang</button>
+          <button onClick={() => setActiveTab('Utang')} className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-bold text-sm trans-all ${activeTab === 'Utang' ? 'bg-white dark:bg-slate-700 shadow-sm text-rose-700 dark:text-rose-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}>Buku Utang</button>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <button onClick={() => setShowContactModal(true)} className="flex-1 sm:flex-none justify-center items-center flex gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold"><Users size={16} /> Kontak</button>
-          <button onClick={() => { setDebtForm({...debtForm, type: activeTab}); setShowDebtModal(true); }} className={`flex-1 sm:flex-none justify-center items-center flex gap-2 px-4 py-2 text-white rounded-xl font-bold ${activeTab === 'Piutang' ? 'bg-primary-600' : 'bg-rose-600'}`}><Plus size={16} /> Tambah {activeTab}</button>
+          <button onClick={() => setShowContactModal(true)} className="flex-1 sm:flex-none justify-center items-center flex gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 trans-all"><Users size={16} /> Kontak</button>
+          <button onClick={() => { setDebtForm({...debtForm, type: activeTab}); setShowDebtModal(true); }} className={`flex-1 sm:flex-none justify-center items-center flex gap-2 px-4 py-2 text-white rounded-xl font-bold trans-all hover:-translate-y-0.5 ${activeTab === 'Piutang' ? 'bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30' : 'bg-rose-600 hover:bg-rose-700 shadow-lg shadow-rose-600/30'}`}><Plus size={16} /> Tambah {activeTab}</button>
         </div>
       </div>
 
-      <div className="flex-1 card border p-4 sm:p-8 overflow-hidden relative flex flex-col">
+      <div className="flex-1 bg-white dark:bg-slate-900/40 border dark:border-slate-800/60 rounded-2xl shadow-sm p-4 sm:p-8 overflow-hidden relative flex flex-col">
         {loading && <div className="absolute inset-0 bg-white/60 z-20 flex items-center justify-center font-bold text-primary-600">Memuat...</div>}
         <div className="overflow-x-auto flex-1">
           <table className="w-full text-left text-sm min-w-[700px]">
