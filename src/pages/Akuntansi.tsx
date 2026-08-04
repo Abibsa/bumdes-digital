@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
-import { FileText, TrendingUp, DollarSign, ArrowDownCircle, ArrowUpCircle, BookOpen, Scale, Wallet, Activity } from 'lucide-react';
+import { FileText, TrendingUp, DollarSign, ArrowDownCircle, ArrowUpCircle, BookOpen, Scale, Wallet, Activity, Download, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { exportToPDF, exportToExcel, type BumdesProfile, type ExportTableData } from '../utils/exportUtils';
 
 interface FixedAsset {
   id: string;
@@ -47,6 +48,15 @@ export default function Akuntansi() {
   const [selectedLedgerAccount, setSelectedLedgerAccount] = useState<string>('');
   
   const [loading, setLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // BUMDes profile for export headers/signatures
+  const [bumdesProfile, setBumdesProfile] = useState<BumdesProfile>({
+    storeName: 'BUMDes Noto Mulyo',
+    storeAddress: 'Desa Polodarat, Kec. Pecalungan',
+    direkturName: '',
+    bendaharaName: ''
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -63,6 +73,28 @@ export default function Akuntansi() {
     // Fetch Assets
     const { data: assets } = await supabase.from('fixed_assets').select('*').order('name');
     if (assets) setFixedAssets(assets);
+
+    // Fetch BUMDes profile for export kop surat
+    const { data: storeData } = await supabase.from('settings').select('*').single();
+    if (storeData) {
+      setBumdesProfile(prev => ({
+        ...prev,
+        storeName: storeData.store_name || prev.storeName,
+        storeAddress: storeData.store_address || prev.storeAddress
+      }));
+    }
+
+    // Fetch pengurus for signature block
+    const { data: usersData } = await supabase.from('bumdes_users').select('*');
+    if (usersData) {
+      const direktur = usersData.find((u: any) => u.role === 'Direktur BUMDes');
+      const bendahara = usersData.find((u: any) => u.role === 'Bendahara');
+      setBumdesProfile(prev => ({
+        ...prev,
+        direkturName: direktur?.name || '',
+        bendaharaName: bendahara?.name || ''
+      }));
+    }
 
     setLoading(false);
   };
@@ -210,11 +242,211 @@ export default function Akuntansi() {
     setLoading(false);
   };
 
+  // ============================================================
+  // Export Handlers
+  // ============================================================
+  const handleExportPDF = async (reportType: string) => {
+    setIsExporting(true);
+    try {
+      const data = buildExportData(reportType);
+      if (data) await exportToPDF(data, bumdesProfile);
+    } catch (err) {
+      console.error('Export PDF error:', err);
+      alert('Gagal membuat file PDF.');
+    }
+    setIsExporting(false);
+  };
+
+  const handleExportExcel = async (reportType: string) => {
+    setIsExporting(true);
+    try {
+      const data = buildExportData(reportType);
+      if (data) await exportToExcel([data], bumdesProfile);
+    } catch (err) {
+      console.error('Export Excel error:', err);
+      alert('Gagal membuat file Excel.');
+    }
+    setIsExporting(false);
+  };
+
+  const handleExportAllExcel = async () => {
+    setIsExporting(true);
+    try {
+      const types = ['laba-rugi', 'neraca', 'neraca-saldo', 'lpe', 'lak'];
+      const allData = types.map(t => buildExportData(t)).filter(Boolean) as ExportTableData[];
+      if (allData.length > 0) await exportToExcel(allData, bumdesProfile);
+    } catch (err) {
+      console.error('Export All Excel error:', err);
+      alert('Gagal membuat file Excel.');
+    }
+    setIsExporting(false);
+  };
+
+  const buildExportData = (reportType: string): ExportTableData | null => {
+    switch (reportType) {
+      case 'laba-rugi': {
+        const pendapatanAccounts = Object.values(accountBalances).filter(b => b.account.type === 'Revenue' && b.balance !== 0);
+        const hppAccounts = Object.values(accountBalances).filter(b => b.account.type === 'Expense' && b.account.code.startsWith('5') && b.balance !== 0);
+        const bebanAccounts = Object.values(accountBalances).filter(b => b.account.type === 'Expense' && !b.account.code.startsWith('5') && b.balance !== 0);
+        const rows: (string | number)[][] = [];
+        const subtotalRows: number[] = [];
+
+        rows.push(['', 'PENDAPATAN', '', '']);
+        pendapatanAccounts.forEach(b => rows.push([b.account.code, b.account.name, '', b.balance]));
+        subtotalRows.push(rows.length);
+        rows.push(['', 'Total Pendapatan', '', labaRugiData.pendapatan]);
+
+        rows.push(['', '', '', '']);
+        rows.push(['', 'HARGA POKOK PENJUALAN', '', '']);
+        hppAccounts.forEach(b => rows.push([b.account.code, b.account.name, b.balance, '']));
+        subtotalRows.push(rows.length);
+        rows.push(['', 'Total HPP', labaRugiData.hpp, '']);
+
+        subtotalRows.push(rows.length);
+        rows.push(['', 'LABA KOTOR', '', labaRugiData.labaKotor]);
+
+        rows.push(['', '', '', '']);
+        rows.push(['', 'BEBAN OPERASIONAL', '', '']);
+        bebanAccounts.forEach(b => rows.push([b.account.code, b.account.name, b.balance, '']));
+        subtotalRows.push(rows.length);
+        rows.push(['', 'Total Beban Operasional', labaRugiData.beban, '']);
+
+        return {
+          title: 'LAPORAN LABA RUGI',
+          headers: ['Kode', 'Keterangan', 'Debit', 'Kredit'],
+          rows, subtotalRows,
+          totalRow: ['', 'LABA (RUGI) BERSIH', '', labaRugiData.labaBersih]
+        };
+      }
+      case 'neraca': {
+        const rows: (string | number)[][] = [];
+        const subtotalRows: number[] = [];
+
+        rows.push(['', 'AKTIVA (ASET)', '']);
+        rows.push(['', 'Aktiva Lancar', neracaData.aktivaLancar]);
+        rows.push(['', 'Aset Tetap', neracaData.asetTetap]);
+        subtotalRows.push(rows.length);
+        rows.push(['', 'Total Aktiva', neracaData.totalAset]);
+
+        rows.push(['', '', '']);
+        rows.push(['', 'PASIVA (KEWAJIBAN & EKUITAS)', '']);
+        rows.push(['', 'Kewajiban', neracaData.kewajiban]);
+        rows.push(['', 'Modal Ekuitas', neracaData.ekuitas]);
+        rows.push(['', 'Laba Berjalan', labaRugiData.labaBersih]);
+        subtotalRows.push(rows.length);
+        rows.push(['', 'Total Pasiva', neracaData.totalPasiva]);
+
+        return {
+          title: 'NERACA (LAPORAN POSISI KEUANGAN)',
+          headers: ['No', 'Keterangan', 'Jumlah (Rp)'],
+          rows, subtotalRows
+        };
+      }
+      case 'neraca-saldo': {
+        const activeAccounts = Object.values(accountBalances).filter(b => b.debit > 0 || b.credit > 0 || b.balance !== 0);
+        activeAccounts.sort((a, b) => a.account.code.localeCompare(b.account.code));
+        const totalDeb = activeAccounts.reduce((sum, b) => sum + (b.account.type === 'Asset' || b.account.type === 'Expense' ? b.balance : 0), 0);
+        const totalKre = activeAccounts.reduce((sum, b) => sum + (b.account.type !== 'Asset' && b.account.type !== 'Expense' ? b.balance : 0), 0);
+
+        const rows: (string | number)[][] = activeAccounts.map(b => [
+          b.account.code,
+          b.account.name,
+          (b.account.type === 'Asset' || b.account.type === 'Expense') && b.balance > 0 ? b.balance : 0,
+          (b.account.type !== 'Asset' && b.account.type !== 'Expense') && b.balance > 0 ? b.balance : 0
+        ]);
+
+        return {
+          title: 'NERACA SALDO',
+          headers: ['Kode', 'Nama Akun', 'Debit', 'Kredit'],
+          rows,
+          totalRow: ['', 'TOTAL', totalDeb, totalKre]
+        };
+      }
+      case 'lpe': {
+        const ekuitasAkhir = neracaData.ekuitas + labaRugiData.labaBersih;
+        return {
+          title: 'LAPORAN PERUBAHAN EKUITAS (LPE)',
+          headers: ['No', 'Keterangan', 'Jumlah (Rp)'],
+          rows: [
+            [1, 'Modal Awal (Ekuitas)', neracaData.ekuitas],
+            [2, 'Laba (Rugi) Periode Berjalan', labaRugiData.labaBersih]
+          ],
+          totalRow: ['', 'Ekuitas Akhir', ekuitasAkhir]
+        };
+      }
+      case 'lak': {
+        return {
+          title: 'LAPORAN ARUS KAS (LAK)',
+          headers: ['No', 'Keterangan', 'Jumlah (Rp)'],
+          rows: [
+            [1, 'Arus Kas dari Aktivitas Operasi', lakData.operasi],
+            [2, 'Arus Kas dari Aktivitas Investasi', lakData.investasi],
+            [3, 'Arus Kas dari Aktivitas Pendanaan', lakData.pendanaan]
+          ],
+          totalRow: ['', 'Kenaikan (Penurunan) Kas Bersih', lakData.total]
+        };
+      }
+      case 'buku-besar': {
+        const accName = accounts.find(a => a.id === selectedLedgerAccount);
+        if (!accName) return null;
+        const accountJournals = journals.filter(j => j.account_id === selectedLedgerAccount);
+        let runningBalance = 0;
+        const sorted = [...accountJournals].reverse();
+        const rows: (string | number)[][] = sorted.map(j => {
+          const type = accName.type;
+          const isPositive = type === 'Asset' || type === 'Expense' ? j.debit - j.credit : j.credit - j.debit;
+          runningBalance += isPositive;
+          return [
+            new Date(j.created_at).toLocaleDateString('id-ID'),
+            j.description,
+            j.debit > 0 ? j.debit : 0,
+            j.credit > 0 ? j.credit : 0,
+            runningBalance
+          ];
+        });
+        return {
+          title: `BUKU BESAR - ${accName.code} ${accName.name}`,
+          headers: ['Tanggal', 'Keterangan', 'Debit', 'Kredit', 'Saldo'],
+          rows
+        };
+      }
+      default:
+        return null;
+    }
+  };
+
+  // ============================================================
+  // Export Buttons Component
+  // ============================================================
+  const ExportButtons = ({ reportType }: { reportType: string }) => (
+    <div className="flex gap-2 flex-wrap">
+      <button
+        onClick={() => handleExportPDF(reportType)}
+        disabled={isExporting}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 rounded-lg text-xs font-bold border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/50 trans-all disabled:opacity-50"
+      >
+        {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+        Export PDF
+      </button>
+      <button
+        onClick={() => handleExportExcel(reportType)}
+        disabled={isExporting}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-bold border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 trans-all disabled:opacity-50"
+      >
+        {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+        Export Excel
+      </button>
+    </div>
+  );
+
   // UI Render function pieces
   const renderLabaRugi = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-3xl mx-auto w-full space-y-4 md:space-y-6">
-        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Laba Rugi</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Laba Rugi</h2>
+          <ExportButtons reportType="laba-rugi" />
+        </div>
         <div className="bg-slate-50 dark:bg-slate-800/50 p-4 md:p-6 rounded-2xl border">
           <h3 className="font-bold text-base md:text-lg mb-3 md:mb-4">PENDAPATAN</h3>
           <div className="flex justify-between gap-2 text-sm md:text-base"><span>Total Pendapatan</span><span className="font-bold text-right">Rp {labaRugiData.pendapatan.toLocaleString('id-ID')}</span></div>
@@ -240,7 +472,10 @@ export default function Akuntansi() {
   const renderNeraca = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-4xl mx-auto w-full">
-        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-4 md:mb-8">Neraca (Posisi Keuangan)</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-8">
+          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Neraca (Posisi Keuangan)</h2>
+          <ExportButtons reportType="neraca" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           <div className="card rounded-2xl p-6 shadow-sm border">
             <h3 className="font-extrabold text-lg mb-4 border-b-2 border-emerald-500 pb-2">AKTIVA (ASET)</h3>
@@ -278,7 +513,10 @@ export default function Akuntansi() {
     return (
       <div className="flex-1 overflow-auto p-4 md:p-8">
         <div className="max-w-5xl mx-auto w-full space-y-4 md:space-y-6">
-          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Buku Besar</h2>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Buku Besar</h2>
+            {selectedLedgerAccount && <ExportButtons reportType="buku-besar" />}
+          </div>
           <select value={selectedLedgerAccount} onChange={e => setSelectedLedgerAccount(e.target.value)} className="input-field w-full md:w-1/2 px-4 py-3 border-2 rounded-xl text-sm md:text-base">
             <option value="">-- Pilih Akun --</option>
             {accounts.map(a => <option key={a.id} value={a.id}>{a.code} - {a.name}</option>)}
@@ -318,7 +556,10 @@ export default function Akuntansi() {
     return (
       <div className="flex-1 overflow-auto p-4 md:p-8">
         <div className="max-w-4xl mx-auto w-full">
-          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mb-4 md:mb-6">Neraca Saldo</h2>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6">
+            <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Neraca Saldo</h2>
+            <ExportButtons reportType="neraca-saldo" />
+          </div>
           <div className="card rounded-2xl overflow-hidden border">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm min-w-[600px]">
@@ -351,7 +592,10 @@ export default function Akuntansi() {
   const renderLPE = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Perubahan Ekuitas (LPE)</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Perubahan Ekuitas (LPE)</h2>
+          <ExportButtons reportType="lpe" />
+        </div>
         <div className="card rounded-2xl p-4 md:p-6 border space-y-3 md:space-y-4">
           <div className="flex justify-between gap-2 text-sm md:text-base"><span>Modal Awal (Ekuitas)</span><span className="font-bold text-right">Rp {neracaData.ekuitas.toLocaleString('id-ID')}</span></div>
           <div className="flex justify-between gap-2 text-sm md:text-base text-emerald-600 dark:text-emerald-400"><span>Laba (Rugi) Periode Berjalan</span><span className="font-bold text-right">Rp {labaRugiData.labaBersih.toLocaleString('id-ID')}</span></div>
@@ -364,7 +608,10 @@ export default function Akuntansi() {
   const renderLAK = () => (
     <div className="flex-1 overflow-auto p-4 md:p-8">
       <div className="max-w-3xl mx-auto w-full space-y-6">
-        <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Arus Kas (LAK)</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Laporan Arus Kas (LAK)</h2>
+          <ExportButtons reportType="lak" />
+        </div>
         <div className="card rounded-2xl p-4 md:p-6 border space-y-3 md:space-y-4">
           <div className="flex justify-between gap-2 text-sm md:text-base"><span>Arus Kas dari Aktivitas Operasi</span><span className="font-bold text-right">Rp {lakData.operasi.toLocaleString('id-ID')}</span></div>
           <div className="flex justify-between gap-2 text-sm md:text-base"><span>Arus Kas dari Aktivitas Investasi</span><span className="font-bold text-right">Rp {lakData.investasi.toLocaleString('id-ID')}</span></div>
@@ -422,6 +669,9 @@ export default function Akuntansi() {
         <div className="flex gap-2 w-full">
           <button onClick={() => setShowIncomeModal(true)} className="flex-1 flex items-center justify-center gap-1.5 md:gap-2 bg-emerald-50 text-emerald-700 px-3 md:px-4 py-2.5 rounded-xl font-bold border border-emerald-200 text-xs md:text-sm"><ArrowDownCircle size={14} /> Pemasukan</button>
           <button onClick={() => setShowExpenseModal(true)} className="flex-1 flex items-center justify-center gap-1.5 md:gap-2 bg-rose-50 text-rose-700 px-3 md:px-4 py-2.5 rounded-xl font-bold border border-rose-200 text-xs md:text-sm"><ArrowUpCircle size={14} /> Pengeluaran</button>
+          <button onClick={handleExportAllExcel} disabled={isExporting} className="flex-1 flex items-center justify-center gap-1.5 md:gap-2 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 md:px-4 py-2.5 rounded-xl font-bold border border-primary-200 dark:border-primary-800 text-xs md:text-sm disabled:opacity-50">
+            {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} Semua Laporan (.xlsx)
+          </button>
         </div>
       </div>
       

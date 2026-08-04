@@ -20,8 +20,11 @@ export default defineConfig({
             if (id.includes('chart.js') || id.includes('react-chartjs-2')) {
               return 'charts';
             }
-            if (id.includes('jspdf')) {
+            if (id.includes('jspdf') || id.includes('pdfmake')) {
               return 'pdf';
+            }
+            if (id.includes('exceljs')) {
+              return 'excel';
             }
             if (id.includes('lucide-react')) {
               return 'icons';
