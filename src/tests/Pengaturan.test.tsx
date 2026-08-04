@@ -185,9 +185,13 @@ describe('Pengaturan - Settings & User Management', () => {
     fireEvent.click(pengurusTab);
 
     await waitFor(() => {
-      expect(screen.getByText(/direktur bumdes/i)).toBeInTheDocument();
-      expect(screen.getByText(/bendahara/i)).toBeInTheDocument();
-      expect(screen.getByText(/sekretaris/i)).toBeInTheDocument();
+      // Use getAllByText since role names appear in both dropdown and user list
+      const direkturElements = screen.getAllByText(/direktur bumdes/i);
+      expect(direkturElements.length).toBeGreaterThan(0);
+      const bendaharaElements = screen.getAllByText(/bendahara/i);
+      expect(bendaharaElements.length).toBeGreaterThan(0);
+      const sekretarisElements = screen.getAllByText(/sekretaris/i);
+      expect(sekretarisElements.length).toBeGreaterThan(0);
     }, { timeout: 3000 });
   });
 
