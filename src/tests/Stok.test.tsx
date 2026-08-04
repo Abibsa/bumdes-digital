@@ -262,13 +262,15 @@ describe('Manajemen Stok & Kartu Stok', () => {
     });
 
     await waitFor(() => {
-      // Use getAllByText since "Masuk" appears in description and header
+      // Use getAllByText since these words appear in multiple places
       const waktuElements = screen.getAllByText(/waktu/i);
       expect(waktuElements.length).toBeGreaterThan(0);
-      expect(screen.getByText(/keterangan/i)).toBeInTheDocument();
+      const keteranganElements = screen.getAllByText(/keterangan/i);
+      expect(keteranganElements.length).toBeGreaterThan(0);
       const masukElements = screen.getAllByText(/masuk/i);
       expect(masukElements.length).toBeGreaterThan(0);
-      expect(screen.getByText(/keluar/i)).toBeInTheDocument();
+      const keluarElements = screen.getAllByText(/keluar/i);
+      expect(keluarElements.length).toBeGreaterThan(0);
       expect(screen.getByText(/saldo stok/i)).toBeInTheDocument();
     }, { timeout: 3000 });
   });
