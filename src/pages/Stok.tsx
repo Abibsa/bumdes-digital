@@ -185,7 +185,7 @@ export default function Stok() {
                     <th className="p-4 text-center rounded-tr-xl">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-700/60">
                   {filteredItems.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
                       <td className="p-4 font-mono text-slate-500 dark:text-slate-400">{item.sku}</td>
@@ -225,7 +225,7 @@ export default function Stok() {
                   <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                     <tr><th className="p-4">Waktu</th><th className="p-4">Keterangan</th><th className="p-4 text-center">Masuk</th><th className="p-4 text-center">Keluar</th><th className="p-4 text-center">Saldo Stok</th></tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700/60">
                     {movements.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-slate-500 dark:text-slate-400 font-medium">Belum ada riwayat pergerakan stok.</td></tr>}
                     {movements.map((m, idx) => {
                       let saldo = 0;

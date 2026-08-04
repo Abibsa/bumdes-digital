@@ -290,9 +290,9 @@ export default function Akuntansi() {
                 <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
                   <tr><th className="p-4">Tgl</th><th className="p-4">Keterangan</th><th className="p-4">Debit</th><th className="p-4">Kredit</th><th className="p-4">Saldo</th></tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="">
                   {rows.map(r => (
-                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all">
+                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 trans-all border-b">
                       <td className="p-4">{new Date(r.created_at).toLocaleDateString('id-ID')}</td>
                       <td className="p-4">{r.description}</td>
                       <td className="p-4">{r.debit > 0 ? r.debit.toLocaleString() : '-'}</td>
@@ -383,7 +383,7 @@ export default function Akuntansi() {
           <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
             <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700/60">
             {journals.map(j => (
               <tr key={j.id} className="hover:bg-primary-50 dark:hover:bg-primary-900/20 trans-all">
                 <td className="p-4">{new Date(j.created_at).toLocaleString('id-ID')}</td>
