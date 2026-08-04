@@ -119,13 +119,32 @@ export default function MainLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Dark Mode Toggle */}
+            {/* Dark Mode Toggle (Cool Slider) */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 trans-all active:scale-90 shadow-inner"
-              title={isDark ? 'Mode Terang' : 'Mode Gelap'}
+              className={`relative flex items-center w-16 h-[34px] rounded-full p-1 transition-colors duration-500 ease-in-out border shadow-inner ${
+                isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50 border-blue-200'
+              }`}
+              title={isDark ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
             >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              {/* Background Icons (Kiri: Matahari redup, Kanan: Bulan redup) */}
+              <div className="absolute inset-0 flex justify-between items-center px-2 z-0 pointer-events-none">
+                <Sun size={14} className={`transform transition-all duration-500 ${isDark ? 'opacity-40 scale-100 text-amber-400/50' : 'opacity-0 scale-50'}`} />
+                <Moon size={14} className={`transform transition-all duration-500 ${isDark ? 'opacity-0 scale-50' : 'opacity-40 scale-100 text-blue-500'}`} />
+              </div>
+
+              {/* Sliding Circle */}
+              <div 
+                className={`relative w-[26px] h-[26px] rounded-full bg-white shadow-md flex items-center justify-center transform transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-10 ${
+                  isDark ? 'translate-x-[28px] rotate-0' : 'translate-x-0 -rotate-90'
+                }`}
+              >
+                {isDark ? (
+                  <Moon size={14} className="text-slate-800" />
+                ) : (
+                  <Sun size={14} className="text-amber-500" />
+                )}
+              </div>
             </button>
 
             <span className="text-sm font-bold text-slate-700 dark:text-slate-300 hidden sm:block">{userName}</span>
