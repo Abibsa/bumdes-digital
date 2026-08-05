@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { FileText, TrendingUp, DollarSign, ArrowDownCircle, ArrowUpCircle, BookOpen, Scale, Wallet, Activity, Download, Loader2 } from 'lucide-react';
+import { FileText, TrendingUp, DollarSign, ArrowDownCircle, ArrowUpCircle, BookOpen, Scale, Wallet, Activity, Download, Loader2, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { exportToPDF, exportToExcel, type BumdesProfile, type ExportTableData } from '../utils/exportUtils';
 
@@ -21,6 +21,7 @@ interface Account {
 
 interface Journal {
   id: string;
+  transaction_id?: string;
   created_at: string;
   description: string;
   debit: number;
@@ -66,7 +67,7 @@ export default function Akuntansi() {
     if (accData) setAccounts(accData);
 
     // Fetch Journals
-    let query = supabase.from('journals').select(`id, created_at, description, debit, credit, account_id, accounts(id, code, name, type)`).order('created_at', { ascending: false });
+    let query = supabase.from('journals').select(`id, transaction_id, created_at, description, debit, credit, account_id, accounts(id, code, name, type)`).order('created_at', { ascending: false });
     const { data: jrnData } = await query;
     if (jrnData) setJournals(jrnData as any);
 
@@ -239,6 +240,22 @@ export default function Akuntansi() {
       }
       setShowIncomeModal(false); setIncomeData({ amount: '', source: 'Tempat Parkir', desc: '' }); fetchData(); alert('Pemasukan berhasil dicatat!');
     } catch (error) { console.error(error); alert('Terjadi kesalahan pencatatan.'); }
+    setLoading(false);
+  };
+
+  const handleDeleteTransaction = async (transactionId: string | undefined) => {
+    if (!transactionId) return;
+    if (!confirm('Yakin ingin menghapus seluruh transaksi ini secara permanen? Data jurnal dan perubahan stok (jika ada) akan dihapus.')) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('transactions').delete().eq('id', transactionId);
+      if (error) throw error;
+      alert('Transaksi berhasil dihapus!');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Gagal menghapus transaksi.');
+    }
     setLoading(false);
   };
 
@@ -628,18 +645,29 @@ export default function Akuntansi() {
         <h2 className="text-xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">Jurnal Umum</h2>
         <div className="card rounded-2xl overflow-hidden border">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm min-w-[700px]">
+            <table className="w-full text-left text-sm min-w-[750px]">
             <thead className="bg-slate-100 dark:bg-slate-800/80 font-bold uppercase text-xs dark:text-slate-300">
-              <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th></tr>
+              <tr><th className="p-4">Waktu</th><th className="p-4">Deskripsi</th><th className="p-4">Akun</th><th className="p-4 text-right">Debit</th><th className="p-4 text-right">Kredit</th><th className="p-4 text-center w-16">Aksi</th></tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
               {journals.map(j => (
-                <tr key={j.id} className="hover:bg-primary-50 dark:hover:bg-primary-900/20 trans-all">
+                <tr key={j.id} className="hover:bg-primary-50 dark:hover:bg-primary-900/20 trans-all group">
                   <td className="p-4 whitespace-nowrap text-slate-500 dark:text-slate-400">{new Date(j.created_at).toLocaleString('id-ID')}</td>
                   <td className="p-4 text-slate-700 dark:text-slate-200">{j.description}</td>
                   <td className="p-4 font-bold text-slate-800 dark:text-slate-100">{j.accounts?.code} {j.accounts?.name}</td>
                   <td className={`p-4 text-right font-medium ${j.debit > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.debit > 0 ? j.debit.toLocaleString('id-ID') : '-'}</td>
                   <td className={`p-4 text-right font-medium ${j.credit > 0 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-400 dark:text-slate-600'}`}>{j.credit > 0 ? j.credit.toLocaleString('id-ID') : '-'}</td>
+                  <td className="p-4 text-center">
+                    {j.transaction_id && (
+                      <button 
+                        onClick={() => handleDeleteTransaction(j.transaction_id)}
+                        className="text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 p-2 rounded-lg trans-all opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Hapus Transaksi Ini"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
