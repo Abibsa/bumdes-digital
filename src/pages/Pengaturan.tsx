@@ -235,6 +235,7 @@ export default function Pengaturan() {
                       <select value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })} className="w-full px-4 py-2.5 input-field border rounded-xl focus:border-primary-500 font-semibold text-sm">
                         <option value="Direktur BUMDes">Direktur BUMDes</option>
                         <option value="Bendahara">Bendahara</option>
+                        <option value="Akuntan">Akuntan / Petugas Akuntansi</option>
                         <option value="Sekretaris">Sekretaris</option>
                         <option value="Admin">Admin</option>
                       </select>
