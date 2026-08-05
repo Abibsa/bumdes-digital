@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Store, MapPin, Phone, Save, Users, UserPlus, Trash2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseAdmin } from '../lib/supabase';
 
 export default function Pengaturan() {
   const [settings, setSettings] = useState({
@@ -60,11 +60,18 @@ export default function Pengaturan() {
     e.preventDefault();
     setSaving(true);
     try {
-      // Note: Di sistem produksi sungguhan (backend), ini akan memanggil API pembuatan user.
-      // Untuk versi frontend ini, kita mendaftarkannya ke tabel pengurus.
-      const { error: signUpError } = await supabase.auth.signUp({
+      if (!supabaseAdmin) {
+        alert('Fitur ini membutuhkan VITE_SUPABASE_SERVICE_ROLE_KEY di .env.local');
+        setSaving(false);
+        return;
+      }
+
+      // WARNING: Menggunakan Service Role Key di frontend sangat tidak disarankan untuk aplikasi produksi nyata.
+      // Ini hanya digunakan untuk kemudahan demo presentasi KKN tanpa backend.
+      const { error: signUpError } = await supabaseAdmin.auth.admin.createUser({
         email: newUser.email,
         password: newUser.password,
+        email_confirm: true
       });
 
       if (signUpError) {
