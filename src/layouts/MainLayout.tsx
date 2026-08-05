@@ -91,8 +91,8 @@ export default function MainLayout() {
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 py-3.5 rounded-xl trans-all transition-all duration-300 ${
-                  isSidebarCollapsed ? 'md:px-3 md:justify-center mx-2' : 'px-4 mx-0'
+                `flex items-center rounded-xl trans-all transition-all duration-300 ${
+                  isSidebarCollapsed ? 'md:gap-0 md:w-12 md:h-12 md:p-0 md:justify-center md:mx-auto gap-3 px-4 py-3.5 mx-0' : 'gap-3 px-4 py-3.5 mx-0'
                 } ${
                   isActive 
                     ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 font-bold shadow-sm' 
@@ -110,8 +110,8 @@ export default function MainLayout() {
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
           <button 
             onClick={handleLogout} 
-            className={`flex items-center gap-3 py-3.5 rounded-xl trans-all text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-700 font-bold transition-all duration-300 ${
-              isSidebarCollapsed ? 'md:px-3 md:justify-center mx-2' : 'px-4 mx-0 w-full text-left'
+            className={`flex items-center rounded-xl trans-all text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-700 font-bold transition-all duration-300 ${
+              isSidebarCollapsed ? 'md:gap-0 md:w-12 md:h-12 md:p-0 md:justify-center md:mx-auto gap-3 px-4 py-3.5 mx-0 w-full text-left' : 'gap-3 px-4 py-3.5 mx-0 w-full text-left'
             }`}
             title={isSidebarCollapsed ? 'Keluar Sistem' : undefined}
           >
