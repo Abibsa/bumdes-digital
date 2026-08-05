@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShoppingCart, Package, FileText, Settings, Store, LogOut, Menu, X, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, FileText, Settings, Store, LogOut, Menu, X, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
@@ -10,6 +10,7 @@ export default function MainLayout() {
   const [storeInfo, setStoreInfo] = useState({ name: 'BUMDes Digital', address: 'Pulodarat, Jepara' });
   const [userName, setUserName] = useState('Admin');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     // Ambil info toko
@@ -53,25 +54,33 @@ export default function MainLayout() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed md:static inset-y-0 left-0 z-50 w-72 md:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 
-        flex flex-col shadow-xl md:shadow-sm print:hidden trans-all
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        fixed md:static inset-y-0 left-0 z-50 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 
+        flex flex-col shadow-xl md:shadow-sm print:hidden trans-all duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0'}
+        ${!isMobileMenuOpen && isSidebarCollapsed ? 'md:w-20' : 'md:w-64'}
       `}>
-        <div className="p-6 flex items-center justify-between gap-3">
+        <div className="p-6 flex items-center justify-between gap-3 relative">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 min-w-[40px] bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold shadow-primary">
+            <div className="w-10 h-10 min-w-[40px] bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold shadow-primary shrink-0">
               <Store size={20} />
             </div>
-            <div className="overflow-hidden">
+            <div className={`overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'}`}>
               <h1 className="font-bold text-lg leading-tight text-primary-900 dark:text-primary-300 truncate" title={storeInfo.name}>{storeInfo.name}</h1>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate" title={storeInfo.address}>{storeInfo.address}</p>
             </div>
           </div>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700"
+            className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 shrink-0"
           >
             <X size={18} />
+          </button>
+
+          <button
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="hidden md:flex absolute -right-3 top-8 w-6 h-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full items-center justify-center text-slate-500 hover:text-primary-600 hover:border-primary-300 shadow-sm z-50 transition-transform"
+          >
+            {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         </div>
 
@@ -82,23 +91,32 @@ export default function MainLayout() {
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3.5 rounded-xl trans-all ${
+                `flex items-center gap-3 py-3.5 rounded-xl trans-all transition-all duration-300 ${
+                  isSidebarCollapsed ? 'md:px-3 md:justify-center mx-2' : 'px-4 mx-0'
+                } ${
                   isActive 
                     ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 font-bold shadow-sm' 
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
                 }`
               }
+              title={isSidebarCollapsed ? item.label : undefined}
             >
-              {item.icon}
-              <span className="text-sm">{item.label}</span>
+              <div className="shrink-0">{item.icon}</div>
+              <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'}`}>{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-          <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3.5 w-full text-left rounded-xl trans-all text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-700 font-bold">
-            <LogOut size={20} />
-            <span className="text-sm">Keluar Sistem</span>
+          <button 
+            onClick={handleLogout} 
+            className={`flex items-center gap-3 py-3.5 rounded-xl trans-all text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-700 font-bold transition-all duration-300 ${
+              isSidebarCollapsed ? 'md:px-3 md:justify-center mx-2' : 'px-4 mx-0 w-full text-left'
+            }`}
+            title={isSidebarCollapsed ? 'Keluar Sistem' : undefined}
+          >
+            <div className="shrink-0"><LogOut size={20} /></div>
+            <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'}`}>Keluar Sistem</span>
           </button>
         </div>
       </aside>
