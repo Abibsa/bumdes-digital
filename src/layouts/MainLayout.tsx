@@ -64,7 +64,7 @@ export default function MainLayout() {
             <div className="w-10 h-10 min-w-[40px] bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold shadow-primary shrink-0">
               <Store size={20} />
             </div>
-            <div className={`overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'}`}>
+            <div className={`overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'md:w-48 w-auto opacity-100'}`}>
               <h1 className="font-bold text-lg leading-tight text-primary-900 dark:text-primary-300 truncate" title={storeInfo.name}>{storeInfo.name}</h1>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate" title={storeInfo.address}>{storeInfo.address}</p>
             </div>
@@ -102,7 +102,7 @@ export default function MainLayout() {
               title={isSidebarCollapsed ? item.label : undefined}
             >
               <div className="shrink-0">{item.icon}</div>
-              <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'}`}>{item.label}</span>
+              <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'md:w-40 w-auto opacity-100'}`}>{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -116,7 +116,7 @@ export default function MainLayout() {
             title={isSidebarCollapsed ? 'Keluar Sistem' : undefined}
           >
             <div className="shrink-0"><LogOut size={20} /></div>
-            <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'}`}>Keluar Sistem</span>
+            <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'md:w-40 w-auto opacity-100'}`}>Keluar Sistem</span>
           </button>
         </div>
       </aside>
