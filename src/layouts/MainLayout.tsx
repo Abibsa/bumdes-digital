@@ -57,21 +57,21 @@ export default function MainLayout() {
         fixed md:static inset-y-0 left-0 z-50 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 
         flex flex-col shadow-xl md:shadow-sm print:hidden trans-all duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0'}
-        ${!isMobileMenuOpen && isSidebarCollapsed ? 'md:w-20' : 'md:w-64'}
+        ${!isMobileMenuOpen && isSidebarCollapsed ? 'md:w-20' : 'md:w-72'}
       `}>
-        <div className="p-6 flex items-center justify-between gap-3 relative">
+        <div className="p-5 flex items-center justify-between gap-3 relative">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 min-w-[40px] bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold shadow-primary shrink-0">
               <Store size={20} />
             </div>
-            <div className={`overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'md:w-48 w-auto opacity-100'}`}>
+            <div className={`overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-48 opacity-100'}`}>
               <h1 className="font-bold text-lg leading-tight text-primary-900 dark:text-primary-300 truncate" title={storeInfo.name}>{storeInfo.name}</h1>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate" title={storeInfo.address}>{storeInfo.address}</p>
             </div>
           </div>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 shrink-0"
+            className="md:hidden absolute right-4 top-6 w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 shrink-0"
           >
             <X size={18} />
           </button>
@@ -102,7 +102,7 @@ export default function MainLayout() {
               title={isSidebarCollapsed ? item.label : undefined}
             >
               <div className="shrink-0">{item.icon}</div>
-              <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'md:w-40 w-auto opacity-100'}`}>{item.label}</span>
+              <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-48 opacity-100'}`}>{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -116,7 +116,7 @@ export default function MainLayout() {
             title={isSidebarCollapsed ? 'Keluar Sistem' : undefined}
           >
             <div className="shrink-0"><LogOut size={20} /></div>
-            <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'md:w-40 w-auto opacity-100'}`}>Keluar Sistem</span>
+            <span className={`text-sm whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarCollapsed ? 'md:w-0 md:opacity-0' : 'w-48 opacity-100'}`}>Keluar Sistem</span>
           </button>
         </div>
       </aside>
