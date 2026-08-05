@@ -62,10 +62,16 @@ export default function Pengaturan() {
     try {
       // Note: Di sistem produksi sungguhan (backend), ini akan memanggil API pembuatan user.
       // Untuk versi frontend ini, kita mendaftarkannya ke tabel pengurus.
-      await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email: newUser.email,
         password: newUser.password,
       });
+
+      if (signUpError) {
+        alert(`Gagal menambah pengurus: ${signUpError.message}`);
+        setSaving(false);
+        return;
+      }
 
       await supabase.from('bumdes_users').insert({
         name: newUser.name,
@@ -75,9 +81,9 @@ export default function Pengaturan() {
       setNewUser({ name: '', role: 'Admin', email: '', password: '' });
       fetchData();
       alert('Pengurus berhasil ditambahkan!');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Gagal menambah pengurus. Email mungkin sudah ada.');
+      alert('Terjadi kesalahan sistem.');
     }
     setSaving(false);
   };
